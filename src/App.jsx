@@ -1,31 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import logo from '../src/assets/logo.png'
-
-const initialClients = [
-  { id: 1, name: 'Camille Martin', goal: 'Développer la force du bas du corps' },
-  { id: 2, name: 'Thomas Bernard', goal: 'Préparer une compétition de powerlifting' },
-]
-
-const initialWorkouts = [
-  { id: 1, clientId: 1, exercise: 'Squat', weight: 80, reps: 8, rpe: 8, date: '04/09/2026' },
-  { id: 2, clientId: 1, exercise: 'Squat', weight: 85, reps: 5, rpe: 9, date: '01/09/2026' },
-  { id: 3, clientId: 1, exercise: 'Développé couché', weight: 60, reps: 10, rpe: 7, date: '04/09/2026' },
-  { id: 4, clientId: 1, exercise: 'Développé couché', weight: 65, reps: 6, rpe: 8, date: '29/08/2026' },
-  { id: 5, clientId: 2, exercise: 'Soulevé de terre', weight: 110, reps: 5, rpe: 8, date: '03/09/2026' },
-]
-
-const initialPrograms = [
-  {
-    id: 1,
-    clientId: 1,
-    name: 'Push Pull Legs',
-    exercises: [
-      { id: 1, name: 'Développé couché', sets: 4, reps: 8, intensity: '75%' },
-      { id: 2, name: 'Squat', sets: 4, reps: 6, intensity: '80%' },
-    ],
-  },
-]
+import { supabase } from './supabase'
 
 const emptyWorkout = { exercise: '', weight: '', reps: '', rpe: '' }
 
@@ -62,18 +38,124 @@ const programTemplates = [
   { category: 'Hybrides', name: 'Powerbuilding hybride', description: 'Force et hypertrophie combinées dans une même structure.' },
 ]
 
+function AuthPage() {
+  const [mode, setMode] = useState('login')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+
+  const submit = async (event) => {
+    event.preventDefault()
+    setError('')
+    setMessage('')
+    setSubmitting(true)
+
+    const result = mode === 'login'
+      ? await supabase.auth.signInWithPassword({ email, password })
+      : await supabase.auth.signUp({ email, password })
+
+    setSubmitting(false)
+    if (result.error) {
+      setError(result.error.message)
+      return
+    }
+
+    if (mode === 'register' && !result.data.session) {
+      setMessage('Compte créé. Vérifiez votre email pour confirmer votre inscription.')
+    }
+  }
+
+  return (
+    <main className="auth-page">
+      <section className="auth-card">
+        <img src={logo} alt="Sparo" height="72" />
+        <p className="eyebrow">ESPACE COACH</p>
+        <h1>{mode === 'login' ? 'Connexion' : 'Créer un compte'}</h1>
+        <p className="auth-description">{mode === 'login' ? 'Accédez à votre suivi sportif.' : 'Commencez à suivre vos clients.'}</p>
+        <form className="auth-form" onSubmit={submit}>
+          <label htmlFor="auth-email">Email</label>
+          <input id="auth-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
+          <label htmlFor="auth-password">Mot de passe</label>
+          <input id="auth-password" minLength="6" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required />
+          {error && <p className="auth-error" role="alert">{error}</p>}
+          {message && <p className="auth-message" role="status">{message}</p>}
+          <button className="btn btn-primary" disabled={submitting} type="submit">{submitting ? 'Patientez...' : mode === 'login' ? 'Se connecter' : 'S’inscrire'}</button>
+        </form>
+        <button className="auth-switch" onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); setMessage('') }} type="button">
+          {mode === 'login' ? 'Créer un compte' : 'J’ai déjà un compte'}
+        </button>
+      </section>
+    </main>
+  )
+}
+
 function App() {
-  const [clients, setClients] = useState(initialClients)
-  const [workouts, setWorkouts] = useState(initialWorkouts)
-  const [programs, setPrograms] = useState(initialPrograms)
+  const [session, setSession] = useState(null)
+  const [authLoading, setAuthLoading] = useState(true)
+  const [clients, setClients] = useState([])
+  const [workouts, setWorkouts] = useState([])
+  const [programs, setPrograms] = useState([])
   const [newClientName, setNewClientName] = useState('')
   const [newClientGoal, setNewClientGoal] = useState('')
   const [newProgramName, setNewProgramName] = useState('')
   const [newExercise, setNewExercise] = useState(emptyExercise)
   const [activeProgramId, setActiveProgramId] = useState(null)
   const [duplicateTargets, setDuplicateTargets] = useState({})
-  const [selectedClientId, setSelectedClientId] = useState(1)
+  const [selectedClientId, setSelectedClientId] = useState(null)
   const [newWorkout, setNewWorkout] = useState(emptyWorkout)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
+      setSession(currentSession)
+      setAuthLoading(false)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, currentSession) => {
+      setSession(currentSession)
+      setAuthLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  useEffect(() => {
+    if (!session?.user?.id) {
+      setClients([])
+      setWorkouts([])
+      setPrograms([])
+      setSelectedClientId(null)
+      return
+    }
+
+    const loadData = async () => {
+      const userId = session.user.id
+      const [{ data: clientData, error: clientsError }, { data: workoutData, error: workoutsError }, { data: programData, error: programsError }] = await Promise.all([
+        supabase.from('clients').select('*').eq('user_id', userId).order('id'),
+        supabase.from('workouts').select('*').eq('user_id', userId).order('id', { ascending: false }),
+        supabase.from('programs').select('*').eq('user_id', userId).order('id'),
+      ])
+
+      if (clientsError || workoutsError || programsError) {
+        console.error('Impossible de charger les données du coach.', clientsError || workoutsError || programsError)
+        return
+      }
+
+      const loadedClients = clientData || []
+      setClients(loadedClients)
+      setWorkouts((workoutData || []).map(({ client_id: clientId, ...workout }) => ({ ...workout, clientId })))
+      setPrograms((programData || []).map(({ client_id: clientId, ...program }) => ({ ...program, clientId, exercises: program.exercises || [] })))
+      setSelectedClientId(loadedClients[0]?.id || null)
+    }
+
+    loadData()
+  }, [session])
+
+  if (authLoading) return <main className="auth-page"><p>Chargement...</p></main>
+  if (!session) return <AuthPage />
+
+  const userId = session.user.id
 
   const clientWorkouts = workouts.filter(({ clientId }) => clientId === selectedClientId)
   const selectedClient = clients.find(({ id }) => id === selectedClientId)
@@ -114,32 +196,53 @@ function App() {
     setNewWorkout((current) => ({ ...current, [field]: value }))
   }
 
-  const addClient = (event) => {
+  const addClient = async (event) => {
     event.preventDefault()
     const name = newClientName.trim()
     if (!name) return
 
-    const client = { id: Date.now(), name, goal: newClientGoal.trim() }
+    const { data: client, error } = await supabase.from('clients').insert({ user_id: userId, name, goal: newClientGoal.trim() }).select().single()
+    if (error) {
+      console.error('Impossible d’ajouter le client.', error)
+      return
+    }
+
     setClients((current) => [...current, client])
     setSelectedClientId(client.id)
     setNewClientName('')
     setNewClientGoal('')
   }
 
-  const removeClient = (clientId) => {
+  const removeClient = async (clientId) => {
     const remainingClients = clients.filter(({ id }) => id !== clientId)
+    const [{ error: workoutsError }, { error: programsError }, { error: clientError }] = await Promise.all([
+      supabase.from('workouts').delete().eq('user_id', userId).eq('client_id', clientId),
+      supabase.from('programs').delete().eq('user_id', userId).eq('client_id', clientId),
+      supabase.from('clients').delete().eq('user_id', userId).eq('id', clientId),
+    ])
+    if (workoutsError || programsError || clientError) {
+      console.error('Impossible de supprimer le client.', workoutsError || programsError || clientError)
+      return
+    }
+
     setClients(remainingClients)
     setWorkouts((current) => current.filter(({ clientId: workoutClientId }) => workoutClientId !== clientId))
     setPrograms((current) => current.filter(({ clientId: programClientId }) => programClientId !== clientId))
     if (selectedClientId === clientId) setSelectedClientId(remainingClients[0]?.id || null)
   }
 
-  const createProgram = (event) => {
+  const createProgram = async (event) => {
     event.preventDefault()
     const name = newProgramName.trim()
     if (!selectedClientId || !name) return
 
-    const program = { id: Date.now(), clientId: selectedClientId, name, exercises: [] }
+    const { data: savedProgram, error } = await supabase.from('programs').insert({ user_id: userId, client_id: selectedClientId, name, exercises: [] }).select().single()
+    if (error) {
+      console.error('Impossible de créer le programme.', error)
+      return
+    }
+
+    const program = { ...savedProgram, clientId: savedProgram.client_id, exercises: savedProgram.exercises || [] }
     setPrograms((current) => [...current, program])
     setActiveProgramId(program.id)
     setNewProgramName('')
@@ -149,70 +252,89 @@ function App() {
     setNewExercise((current) => ({ ...current, [field]: value }))
   }
 
-  const addExerciseToProgram = (event) => {
+  const addExerciseToProgram = async (event) => {
     event.preventDefault()
     if (!activeProgramId || !newExercise.name.trim() || !newExercise.sets || !newExercise.reps) return
+
+    const program = programs.find(({ id }) => id === activeProgramId)
+    const exercises = [...program.exercises, { id: Date.now(), name: newExercise.name.trim(), sets: Number(newExercise.sets), reps: Number(newExercise.reps), intensity: newExercise.intensity.trim() }]
+    const { error } = await supabase.from('programs').update({ exercises }).eq('user_id', userId).eq('id', activeProgramId)
+    if (error) {
+      console.error('Impossible d’ajouter l’exercice.', error)
+      return
+    }
 
     setPrograms((current) => current.map((program) => (
       program.id === activeProgramId
         ? {
             ...program,
-            exercises: [...program.exercises, { id: Date.now(), name: newExercise.name.trim(), sets: Number(newExercise.sets), reps: Number(newExercise.reps), intensity: newExercise.intensity.trim() }],
+            exercises,
           }
         : program
     )))
     setNewExercise(emptyExercise)
   }
 
-  const removeExerciseFromProgram = (programId, exerciseId) => {
+  const removeExerciseFromProgram = async (programId, exerciseId) => {
+    const program = programs.find(({ id }) => id === programId)
+    const exercises = program.exercises.filter(({ id }) => id !== exerciseId)
+    const { error } = await supabase.from('programs').update({ exercises }).eq('user_id', userId).eq('id', programId)
+    if (error) {
+      console.error('Impossible de supprimer l’exercice.', error)
+      return
+    }
+
     setPrograms((current) => current.map((program) => (
       program.id === programId
-        ? { ...program, exercises: program.exercises.filter((exercise) => exercise.id !== exerciseId) }
+        ? { ...program, exercises }
         : program
     )))
   }
 
-  const duplicateProgram = (program) => {
+  const duplicateProgram = async (program) => {
     const targetClientId = Number(duplicateTargets[program.id])
     if (!targetClientId) return
 
-    setPrograms((current) => [
-      ...current,
-      {
-        ...program,
-        id: Date.now(),
-        clientId: targetClientId,
-        name: `${program.name} (copie)`,
-        exercises: program.exercises.map((exercise) => ({ ...exercise, id: Date.now() + exercise.id })),
-      },
-    ])
+    const { data: savedProgram, error } = await supabase.from('programs').insert({ user_id: userId, client_id: targetClientId, name: `${program.name} (copie)`, exercises: program.exercises.map((exercise) => ({ ...exercise, id: Date.now() + exercise.id })) }).select().single()
+    if (error) {
+      console.error('Impossible de dupliquer le programme.', error)
+      return
+    }
+
+    setPrograms((current) => [...current, { ...savedProgram, clientId: savedProgram.client_id, exercises: savedProgram.exercises || [] }])
   }
 
-  const addWorkout = (event) => {
+  const addWorkout = async (event) => {
     event.preventDefault()
     if (!selectedClientId || !newWorkout.exercise.trim() || !newWorkout.weight || !newWorkout.reps) return
 
-    setWorkouts((current) => [
-      {
-        id: Date.now(),
-        clientId: selectedClientId,
-        exercise: newWorkout.exercise.trim(),
-        weight: Number(newWorkout.weight),
-        reps: Number(newWorkout.reps),
-        rpe: newWorkout.rpe ? Number(newWorkout.rpe) : null,
-        date: new Date().toLocaleDateString('fr-FR'),
-      },
-      ...current,
-    ])
+    const { data: savedWorkout, error } = await supabase.from('workouts').insert({ user_id: userId, client_id: selectedClientId, exercise: newWorkout.exercise.trim(), weight: Number(newWorkout.weight), reps: Number(newWorkout.reps), rpe: newWorkout.rpe ? Number(newWorkout.rpe) : null, date: new Date().toLocaleDateString('fr-FR') }).select().single()
+    if (error) {
+      console.error('Impossible d’enregistrer la séance.', error)
+      return
+    }
+
+    setWorkouts((current) => [{ ...savedWorkout, clientId: savedWorkout.client_id }, ...current])
     setNewWorkout(emptyWorkout)
   }
 
-  const removeWorkout = (workoutId) => {
+  const removeWorkout = async (workoutId) => {
+    const { error } = await supabase.from('workouts').delete().eq('user_id', userId).eq('id', workoutId)
+    if (error) {
+      console.error('Impossible de supprimer la séance.', error)
+      return
+    }
+
     setWorkouts((current) => current.filter(({ id }) => id !== workoutId))
   }
 
   const exportClientPdf = () => {
     window.print()
+  }
+
+  const signOut = async () => {
+    const { error } = await supabase.auth.signOut()
+    if (error) console.error('Impossible de se déconnecter.', error)
   }
 
   return (
@@ -222,6 +344,10 @@ function App() {
           <img src={logo} alt="" height="80" />
           <h1 style={{ color: '#FF0000', fontWeight: 700, margin: 0 }}>SPARO</h1>
           <img src={logo} alt="" height="80" />
+        </div>
+        <div className="header-account">
+          <span>{session.user.email}</span>
+          <button className="btn btn-outline" onClick={signOut} type="button">Se déconnecter</button>
         </div>
       </header>
 
