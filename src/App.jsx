@@ -42,6 +42,7 @@ function AuthPage() {
   const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -78,7 +79,21 @@ function AuthPage() {
           <label htmlFor="auth-email">Email</label>
           <input id="auth-email" type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
           <label htmlFor="auth-password">Mot de passe</label>
-          <input id="auth-password" minLength="6" type="password" value={password} onChange={(event) => setPassword(event.target.value)} required />
+          <div className="password-input-wrap">
+            <input id="auth-password" minLength="6" type={showPassword ? 'text' : 'password'} value={password} onChange={(event) => setPassword(event.target.value)} required />
+            <button
+              aria-label={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+              className="password-toggle"
+              onClick={() => setShowPassword((visible) => !visible)}
+              title={showPassword ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+              type="button"
+            >
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+                <circle cx="12" cy="12" r="2.5" />
+              </svg>
+            </button>
+          </div>
           {error && <p className="auth-error" role="alert">{error}</p>}
           {message && <p className="auth-message" role="status">{message}</p>}
           <button className="btn btn-primary" disabled={submitting} type="submit">{submitting ? 'Patientez...' : mode === 'login' ? 'Se connecter' : 'S’inscrire'}</button>
