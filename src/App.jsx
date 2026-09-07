@@ -1,0 +1,513 @@
+import { useState } from 'react'
+import './App.css'
+import logo from '../src/assets/logo.png'
+
+const initialClients = [
+  { id: 1, name: 'Camille Martin', goal: 'Développer la force du bas du corps' },
+  { id: 2, name: 'Thomas Bernard', goal: 'Préparer une compétition de powerlifting' },
+]
+
+const initialWorkouts = [
+  { id: 1, clientId: 1, exercise: 'Squat', weight: 80, reps: 8, rpe: 8, date: '04/09/2026' },
+  { id: 2, clientId: 1, exercise: 'Squat', weight: 85, reps: 5, rpe: 9, date: '01/09/2026' },
+  { id: 3, clientId: 1, exercise: 'Développé couché', weight: 60, reps: 10, rpe: 7, date: '04/09/2026' },
+  { id: 4, clientId: 1, exercise: 'Développé couché', weight: 65, reps: 6, rpe: 8, date: '29/08/2026' },
+  { id: 5, clientId: 2, exercise: 'Soulevé de terre', weight: 110, reps: 5, rpe: 8, date: '03/09/2026' },
+]
+
+const initialPrograms = [
+  {
+    id: 1,
+    clientId: 1,
+    name: 'Push Pull Legs',
+    exercises: [
+      { id: 1, name: 'Développé couché', sets: 4, reps: 8, intensity: '75%' },
+      { id: 2, name: 'Squat', sets: 4, reps: 6, intensity: '80%' },
+    ],
+  },
+]
+
+const emptyWorkout = { exercise: '', weight: '', reps: '', rpe: '' }
+
+const getSessionTime = (date) => {
+  const [day, month, year] = date.split('/').map(Number)
+  return new Date(year, month - 1, day).getTime()
+}
+const emptyExercise = { name: '', sets: '', reps: '', intensity: '' }
+const programTemplates = [
+  { category: 'Débutants', name: 'Full Body', description: 'Travail complet du corps à chaque séance.' },
+  { category: 'Débutants', name: 'Half Body', description: 'Séances alternées entre haut et bas du corps.' },
+  { category: 'Débutants', name: 'Starting Strength', description: 'Fondamentaux de la force avec une progression linéaire.' },
+  { category: 'Débutants', name: 'StrongLifts 5x5', description: 'Cinq séries de cinq répétitions sur les mouvements clés.' },
+  { category: 'Débutants', name: 'Fierce 5', description: 'Programme simple et équilibré pour progresser régulièrement.' },
+  { category: 'Intermédiaires', name: 'Upper/Lower Split', description: 'Répartition structurée entre haut et bas du corps.' },
+  { category: 'Intermédiaires', name: 'PHUL', description: 'Deux séances de puissance et deux séances d’hypertrophie.' },
+  { category: 'Intermédiaires', name: 'Arnold Split', description: 'Pectoraux/dos, épaules et bras, puis jambes.' },
+  { category: 'Intermédiaires', name: 'Powerbuilding', description: 'Combinaison de force maximale et de développement musculaire.' },
+  { category: 'Intermédiaires', name: 'GZCLP', description: 'Progression linéaire combinant force et volume.' },
+  { category: 'Avancés', name: 'Push Pull Legs', description: 'Poussée, tirage et jambes en rotation.' },
+  { category: 'Avancés', name: 'Bro Split', description: 'Un groupe musculaire ciblé par séance.' },
+  { category: 'Avancés', name: 'FST-7', description: 'Séries de finition pour maximiser le volume musculaire.' },
+  { category: 'Avancés', name: 'PHAT', description: 'Alternance entre puissance et hypertrophie.' },
+  { category: 'Avancés', name: 'DoggCrapp', description: 'Entraînement intense avec progression et récupération ciblées.' },
+  { category: 'Avancés', name: 'German Volume Training', description: 'Volume élevé avec dix séries de dix répétitions.' },
+  { category: 'Force pure', name: '5/3/1 Wendler', description: 'Cycles de force progressifs basés sur les mouvements clés.' },
+  { category: 'Force pure', name: 'Cube Method', description: 'Rotation de séances de force, vitesse et répétitions.' },
+  { category: 'Force pure', name: 'Sheiko', description: 'Plan de force à haut volume et grande fréquence technique.' },
+  { category: 'Force pure', name: 'Smolov', description: 'Cycle exigeant centré sur la progression du squat.' },
+  { category: 'Force pure', name: 'Conjugate Method', description: 'Travail alterné de force maximale, vitesse et effort dynamique.' },
+  { category: 'Hybrides', name: 'Daily Undulating Periodization', description: 'Intensité et volume varient à chaque séance.' },
+  { category: 'Hybrides', name: 'Block Periodization', description: 'Cycles successifs dédiés au volume, à la force et au pic.' },
+  { category: 'Hybrides', name: 'EMOM', description: 'Un effort programmé au début de chaque minute.' },
+  { category: 'Hybrides', name: 'Powerbuilding hybride', description: 'Force et hypertrophie combinées dans une même structure.' },
+]
+
+function App() {
+  const [clients, setClients] = useState(initialClients)
+  const [workouts, setWorkouts] = useState(initialWorkouts)
+  const [programs, setPrograms] = useState(initialPrograms)
+  const [newClientName, setNewClientName] = useState('')
+  const [newClientGoal, setNewClientGoal] = useState('')
+  const [newProgramName, setNewProgramName] = useState('')
+  const [newExercise, setNewExercise] = useState(emptyExercise)
+  const [activeProgramId, setActiveProgramId] = useState(null)
+  const [duplicateTargets, setDuplicateTargets] = useState({})
+  const [selectedClientId, setSelectedClientId] = useState(1)
+  const [newWorkout, setNewWorkout] = useState(emptyWorkout)
+
+  const clientWorkouts = workouts.filter(({ clientId }) => clientId === selectedClientId)
+  const selectedClient = clients.find(({ id }) => id === selectedClientId)
+  const clientProgress = clients.map((client) => {
+    const clientSessions = workouts.filter(({ clientId }) => clientId === client.id)
+    const exercises = [...new Set(clientSessions.map(({ exercise }) => exercise))]
+    const isProgressing = exercises.some((exercise) => {
+      const sessions = clientSessions
+        .filter(({ exercise: sessionExercise }) => sessionExercise === exercise)
+        .sort((first, second) => getSessionTime(second.date) - getSessionTime(first.date))
+      return sessions.length >= 2 && Number(sessions[0].weight) > Number(sessions[1].weight)
+    })
+
+    return { ...client, isProgressing }
+  })
+
+  const exerciseStats = Object.values(
+    clientWorkouts.reduce((stats, workout) => {
+      const current = stats[workout.exercise] || { exercise: workout.exercise, weights: [], oneRepMaxes: [], sessions: 0 }
+      const weight = Number(workout.weight)
+      const reps = Number(workout.reps)
+      current.weights.push(weight)
+      current.oneRepMaxes.push(weight * (1 + reps / 30))
+      current.sessions += 1
+      stats[workout.exercise] = current
+      return stats
+    }, {}),
+  ).map(({ exercise, weights, oneRepMaxes, sessions }) => ({
+    exercise,
+    sessions,
+    min: Math.min(...weights),
+    max: Math.max(...weights),
+    avg: weights.reduce((sum, weight) => sum + weight, 0) / weights.length,
+    oneRepMax: Math.max(...oneRepMaxes),
+  }))
+
+  const updateWorkout = (field, value) => {
+    setNewWorkout((current) => ({ ...current, [field]: value }))
+  }
+
+  const addClient = (event) => {
+    event.preventDefault()
+    const name = newClientName.trim()
+    if (!name) return
+
+    const client = { id: Date.now(), name, goal: newClientGoal.trim() }
+    setClients((current) => [...current, client])
+    setSelectedClientId(client.id)
+    setNewClientName('')
+    setNewClientGoal('')
+  }
+
+  const removeClient = (clientId) => {
+    const remainingClients = clients.filter(({ id }) => id !== clientId)
+    setClients(remainingClients)
+    setWorkouts((current) => current.filter(({ clientId: workoutClientId }) => workoutClientId !== clientId))
+    setPrograms((current) => current.filter(({ clientId: programClientId }) => programClientId !== clientId))
+    if (selectedClientId === clientId) setSelectedClientId(remainingClients[0]?.id || null)
+  }
+
+  const createProgram = (event) => {
+    event.preventDefault()
+    const name = newProgramName.trim()
+    if (!selectedClientId || !name) return
+
+    const program = { id: Date.now(), clientId: selectedClientId, name, exercises: [] }
+    setPrograms((current) => [...current, program])
+    setActiveProgramId(program.id)
+    setNewProgramName('')
+  }
+
+  const updateExercise = (field, value) => {
+    setNewExercise((current) => ({ ...current, [field]: value }))
+  }
+
+  const addExerciseToProgram = (event) => {
+    event.preventDefault()
+    if (!activeProgramId || !newExercise.name.trim() || !newExercise.sets || !newExercise.reps) return
+
+    setPrograms((current) => current.map((program) => (
+      program.id === activeProgramId
+        ? {
+            ...program,
+            exercises: [...program.exercises, { id: Date.now(), name: newExercise.name.trim(), sets: Number(newExercise.sets), reps: Number(newExercise.reps), intensity: newExercise.intensity.trim() }],
+          }
+        : program
+    )))
+    setNewExercise(emptyExercise)
+  }
+
+  const removeExerciseFromProgram = (programId, exerciseId) => {
+    setPrograms((current) => current.map((program) => (
+      program.id === programId
+        ? { ...program, exercises: program.exercises.filter((exercise) => exercise.id !== exerciseId) }
+        : program
+    )))
+  }
+
+  const duplicateProgram = (program) => {
+    const targetClientId = Number(duplicateTargets[program.id])
+    if (!targetClientId) return
+
+    setPrograms((current) => [
+      ...current,
+      {
+        ...program,
+        id: Date.now(),
+        clientId: targetClientId,
+        name: `${program.name} (copie)`,
+        exercises: program.exercises.map((exercise) => ({ ...exercise, id: Date.now() + exercise.id })),
+      },
+    ])
+  }
+
+  const addWorkout = (event) => {
+    event.preventDefault()
+    if (!selectedClientId || !newWorkout.exercise.trim() || !newWorkout.weight || !newWorkout.reps) return
+
+    setWorkouts((current) => [
+      {
+        id: Date.now(),
+        clientId: selectedClientId,
+        exercise: newWorkout.exercise.trim(),
+        weight: Number(newWorkout.weight),
+        reps: Number(newWorkout.reps),
+        rpe: newWorkout.rpe ? Number(newWorkout.rpe) : null,
+        date: new Date().toLocaleDateString('fr-FR'),
+      },
+      ...current,
+    ])
+    setNewWorkout(emptyWorkout)
+  }
+
+  const removeWorkout = (workoutId) => {
+    setWorkouts((current) => current.filter(({ id }) => id !== workoutId))
+  }
+
+  const exportClientPdf = () => {
+    window.print()
+  }
+
+  return (
+    <div className="app">
+      <header className="header" style={{ background: '#fff', borderBottom: '4px solid #FF0000', color: '#1a1a1a' }}>
+        <div style={{ alignItems: 'center', display: 'flex', gap: '24px', justifyContent: 'center' }}>
+          <img src={logo} alt="" height="80" />
+          <h1 style={{ color: '#FF0000', fontWeight: 700, margin: 0 }}>SPARO</h1>
+          <img src={logo} alt="" height="80" />
+        </div>
+      </header>
+
+      <section className="dashboard section">
+        <div className="dashboard-header">
+          <div>
+            <p className="eyebrow">VUE D'ENSEMBLE</p>
+            <h2>Tableau de bord</h2>
+          </div>
+          <p className="muted">Suivi des performances récentes</p>
+        </div>
+        <div className="dashboard-summary">
+          <div className="summary-card">
+            <span>Clients actifs</span>
+            <strong>{clients.length}</strong>
+          </div>
+          <div className="summary-card">
+            <span>Séances enregistrées</span>
+            <strong>{workouts.length}</strong>
+          </div>
+        </div>
+        <div className="progress-table-wrap">
+          <h3>Progression des clients</h3>
+          <table className="progress-table">
+            <thead>
+              <tr><th>Client</th><th>Statut</th></tr>
+            </thead>
+            <tbody>
+              {clientProgress.map((client) => (
+                <tr key={client.id}>
+                  <td>{client.name}</td>
+                  <td className={client.isProgressing ? 'progressing' : 'stagnating'}>
+                    <span aria-hidden="true">{client.isProgressing ? '↑' : '↓'}</span>
+                    {client.isProgressing ? 'Progression' : 'Stagnation'}
+                  </td>
+                </tr>
+              ))}
+              {!clientProgress.length && <tr><td colSpan="2" className="empty">Aucun client à suivre.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <main className="container">
+        <aside className="section">
+          <h2>Clients</h2>
+          <form className="input-group" onSubmit={addClient}>
+            <input
+              aria-label="Nom du nouveau client"
+              value={newClientName}
+              onChange={(event) => setNewClientName(event.target.value)}
+              placeholder="Nom du client"
+            />
+            <input
+              aria-label="Objectif du client"
+              value={newClientGoal}
+              onChange={(event) => setNewClientGoal(event.target.value)}
+              placeholder="Objectif (facultatif)"
+            />
+            <button className="btn btn-primary" type="submit">Ajouter</button>
+          </form>
+
+          <div className="clients-list">
+            {clients.map((client) => (
+              <div
+                className={`client-card ${client.id === selectedClientId ? 'active' : ''}`}
+                key={client.id}
+                onClick={() => setSelectedClientId(client.id)}
+                onKeyDown={(event) => event.key === 'Enter' && setSelectedClientId(client.id)}
+                role="button"
+                tabIndex="0"
+              >
+                <strong>{client.name}</strong>
+                <span>{workouts.filter(({ clientId }) => clientId === client.id).length} séance(s)</span>
+                <button
+                  aria-label={`Supprimer ${client.name}`}
+                  className="delete-button"
+                  onClick={(event) => { event.stopPropagation(); removeClient(client.id) }}
+                  type="button"
+                >×</button>
+              </div>
+            ))}
+            {!clients.length && <p className="empty">Ajoutez votre premier client.</p>}
+          </div>
+
+          <div className="programs-block">
+            <div className="section-heading compact-heading">
+              <h3>Programmes</h3>
+              <span className="muted">{programs.filter(({ clientId }) => clientId === selectedClientId).length}</span>
+            </div>
+            {selectedClient ? (
+              <>
+                <div className="program-templates">
+                  <p className="template-label">Choisir un modèle</p>
+                  {['Débutants', 'Intermédiaires', 'Avancés', 'Force pure', 'Hybrides'].map((category) => (
+                    <div className="template-category" key={category}>
+                      <h4>{category}</h4>
+                      <div className="template-grid">
+                        {programTemplates.filter((template) => template.category === category).map((template) => (
+                          <button className="template-card" key={template.name} onClick={() => setNewProgramName(template.name)} type="button">
+                            <strong>{template.name}</strong>
+                            <span>{template.description}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <form className="program-create-form" onSubmit={createProgram}>
+                  <input aria-label="Nom du programme" placeholder="Nom du programme" value={newProgramName} onChange={(event) => setNewProgramName(event.target.value)} />
+                  <button className="btn btn-primary" type="submit">Créer</button>
+                </form>
+                <div className="program-list">
+                  {programs.filter(({ clientId }) => clientId === selectedClientId).map((program) => (
+                    <article className={`program-card ${activeProgramId === program.id ? 'active' : ''}`} key={program.id}>
+                      <button className="program-name" onClick={() => setActiveProgramId(activeProgramId === program.id ? null : program.id)} type="button">{program.name}</button>
+                      <span className="program-exercise-count">{program.exercises.length} exercice(s)</span>
+                      {activeProgramId === program.id && (
+                        <>
+                          <form className="exercise-form" onSubmit={addExerciseToProgram}>
+                            <input aria-label="Nom de l'exercice" placeholder="Exercice" value={newExercise.name} onChange={(event) => updateExercise('name', event.target.value)} />
+                            <input aria-label="Nombre de séries" min="1" placeholder="Séries" type="number" value={newExercise.sets} onChange={(event) => updateExercise('sets', event.target.value)} />
+                            <input aria-label="Nombre de répétitions par série" min="1" placeholder="Reps" type="number" value={newExercise.reps} onChange={(event) => updateExercise('reps', event.target.value)} />
+                            <input aria-label="Intensité" placeholder="Intensité (ex. 75%)" value={newExercise.intensity} onChange={(event) => updateExercise('intensity', event.target.value)} />
+                            <button className="btn btn-primary" type="submit">+ Ajouter l'exercice</button>
+                          </form>
+                          <div className="program-exercises">
+                            {program.exercises.map((exercise) => (
+                              <div className="program-exercise-row" key={exercise.id}>
+                                <span>
+                                  <strong>{exercise.name}</strong>
+                                  <small>{exercise.sets} x {exercise.reps} at {exercise.intensity || '—'} intensity</small>
+                                </span>
+                                <button aria-label={`Supprimer ${exercise.name}`} className="delete-exercise" onClick={() => removeExerciseFromProgram(program.id, exercise.id)} type="button">×</button>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                      <div className="duplicate-row">
+                        <select aria-label={`Client cible pour ${program.name}`} value={duplicateTargets[program.id] || ''} onChange={(event) => setDuplicateTargets((current) => ({ ...current, [program.id]: event.target.value }))}>
+                          <option value="">Dupliquer vers...</option>
+                          {clients.filter(({ id }) => id !== program.clientId).map((client) => <option key={client.id} value={client.id}>{client.name}</option>)}
+                        </select>
+                        <button className="text-button" disabled={!duplicateTargets[program.id]} onClick={() => duplicateProgram(program)} type="button">Dupliquer</button>
+                      </div>
+                    </article>
+                  ))}
+                  {!programs.some(({ clientId }) => clientId === selectedClientId) && <p className="empty">Créez un programme pour ce client.</p>}
+                </div>
+              </>
+            ) : <p className="empty">Sélectionnez un client pour gérer ses programmes.</p>}
+          </div>
+        </aside>
+
+        <section className="section workspace">
+          {selectedClient ? (
+            <>
+              <div className="section-heading">
+                <div>
+                  <p className="eyebrow">PROFIL ACTIF</p>
+                  <h2>{selectedClient.name}</h2>
+                  {selectedClient.goal && <p className="client-goal">Objectif: {selectedClient.goal}</p>}
+                </div>
+                <div className="profile-actions">
+                  <strong className="session-count">{clientWorkouts.length} séances</strong>
+                  <button className="btn btn-primary print-button" onClick={exportClientPdf} type="button">Exporter PDF</button>
+                </div>
+              </div>
+
+              <form className="form-group" onSubmit={addWorkout}>
+                <input aria-label="Exercice" placeholder="Exercice" value={newWorkout.exercise} onChange={(event) => updateWorkout('exercise', event.target.value)} />
+                <input aria-label="Poids en kilogrammes" min="0" placeholder="Poids (kg)" type="number" value={newWorkout.weight} onChange={(event) => updateWorkout('weight', event.target.value)} />
+                <input aria-label="Nombre de répétitions" min="1" placeholder="Reps" type="number" value={newWorkout.reps} onChange={(event) => updateWorkout('reps', event.target.value)} />
+                <input aria-label="RPE sur 10" max="10" min="1" placeholder="RPE / 10" step="0.5" type="number" value={newWorkout.rpe} onChange={(event) => updateWorkout('rpe', event.target.value)} />
+                <button className="btn btn-primary" type="submit">+ Enregistrer la séance</button>
+              </form>
+
+              <div className="stats-block">
+                <div className="section-heading compact-heading">
+                  <h3>Statistiques par exercice</h3>
+                  <span className="muted">Poids de travail</span>
+                </div>
+                {exerciseStats.length ? exerciseStats.map((stat) => (
+                  <div className="exercise-progress" key={stat.exercise}>
+                    <div className="exercise-title"><strong>{stat.exercise}</strong><span>{stat.sessions} séance(s)</span></div>
+                    <div className="progress-bar"><div className="progress" style={{ width: `${Math.max(8, (stat.avg / stat.max) * 100)}%` }}><span className="weight-label">{stat.avg.toFixed(1)} kg moyen</span></div></div>
+                    <div className="stat-line"><span>Min <b>{stat.min} kg</b></span><span>Max <b>{stat.max} kg</b></span><span>Moyenne <b>{stat.avg.toFixed(1)} kg</b></span></div>
+                    <p style={{ color: '#FF0000', fontWeight: 700 }}>1RM estimé: {stat.oneRepMax.toFixed(1)} kg</p>
+                    {(() => {
+                      const chartSessions = clientWorkouts
+                        .filter(({ exercise }) => exercise === stat.exercise)
+                        .sort((first, second) => new Date(first.date.split('/').reverse().join('-')) - new Date(second.date.split('/').reverse().join('-')))
+                      const chartWidth = 600
+                      const chartHeight = 190
+                      const chartPadding = { top: 18, right: 18, bottom: 38, left: 48 }
+                      const plotWidth = chartWidth - chartPadding.left - chartPadding.right
+                      const plotHeight = chartHeight - chartPadding.top - chartPadding.bottom
+                      const weights = chartSessions.map(({ weight }) => Number(weight))
+                      const chartMin = Math.min(...weights)
+                      const chartMax = Math.max(...weights)
+                      const weightRange = chartMax - chartMin || 1
+                      const points = chartSessions.map((workout, index) => ({
+                        x: chartPadding.left + (chartSessions.length === 1 ? plotWidth / 2 : (index / (chartSessions.length - 1)) * plotWidth),
+                        y: chartPadding.top + ((chartMax - Number(workout.weight)) / weightRange) * plotHeight,
+                      }))
+
+                      return (
+                        <div className="progression-chart">
+                          <svg aria-label={`Progression du poids pour ${stat.exercise}`} role="img" viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
+                            <line className="chart-axis" x1={chartPadding.left} x2={chartPadding.left} y1={chartPadding.top} y2={chartHeight - chartPadding.bottom} />
+                            <line className="chart-axis" x1={chartPadding.left} x2={chartWidth - chartPadding.right} y1={chartHeight - chartPadding.bottom} y2={chartHeight - chartPadding.bottom} />
+                            <text className="chart-y-label" x="8" y={chartPadding.top + 4}>{chartMax} kg</text>
+                            <text className="chart-y-label" x="8" y={chartHeight - chartPadding.bottom}>{chartMin} kg</text>
+                            <polyline className="chart-line" fill="none" points={points.map(({ x, y }) => `${x},${y}`).join(' ')} />
+                            {points.map(({ x, y }, index) => (
+                              <g key={chartSessions[index].id}>
+                                <circle className="chart-dot" cx={x} cy={y} r="4" />
+                                <text className="chart-x-label" textAnchor="middle" x={x} y={chartHeight - 12}>{chartSessions[index].date}</text>
+                              </g>
+                            ))}
+                          </svg>
+                        </div>
+                      )
+                    })()}
+                  </div>
+                )) : <p className="empty">Aucune statistique pour le moment.</p>}
+              </div>
+
+              <div className="history">
+                <div className="section-heading compact-heading"><h3>Historique récent</h3><span className="muted">{clientWorkouts.length} entrée(s)</span></div>
+                {clientWorkouts.length ? clientWorkouts.map((workout) => (
+                  <article className="workout-card" key={workout.id}>
+                    <div className="workout-header"><strong>{workout.exercise}</strong><span className="date">{workout.date}</span></div>
+                    <div className="workout-details"><span>{workout.weight} kg</span><span>{workout.reps} reps</span><span>RPE {workout.rpe || '—'}</span><button className="text-button" onClick={() => removeWorkout(workout.id)} type="button">Supprimer</button></div>
+                  </article>
+                )) : <p className="empty">Enregistrez une séance pour commencer le suivi.</p>}
+              </div>
+            </>
+          ) : <p className="empty">Sélectionnez un client pour voir son suivi.</p>}
+        </section>
+      </main>
+
+      <section className="print-report">
+        <p className="eyebrow">RAPPORT CLIENT</p>
+        <h1>{selectedClient?.name || 'Client'}</h1>
+        <p className="print-goal"><strong>Objectif:</strong> {selectedClient?.goal || 'Non renseigné'}</p>
+
+        <h2>Statistiques par exercice</h2>
+        {exerciseStats.length ? (
+          <table>
+            <thead><tr><th>Exercice</th><th>Min</th><th>Max</th><th>Moyenne</th><th>1RM estimé</th></tr></thead>
+            <tbody>
+              {exerciseStats.map((stat) => (
+                <tr key={stat.exercise}>
+                  <td>{stat.exercise}</td>
+                  <td>{stat.min} kg</td>
+                  <td>{stat.max} kg</td>
+                  <td>{stat.avg.toFixed(1)} kg</td>
+                  <td>{stat.oneRepMax.toFixed(1)} kg</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : <p>Aucune statistique disponible.</p>}
+
+        <h2>Historique des séances</h2>
+        {clientWorkouts.length ? (
+          <table>
+            <thead><tr><th>Date</th><th>Exercice</th><th>Poids</th><th>Reps</th><th>RPE</th></tr></thead>
+            <tbody>
+              {clientWorkouts.map((workout) => (
+                <tr key={workout.id}>
+                  <td>{workout.date}</td>
+                  <td>{workout.exercise}</td>
+                  <td>{workout.weight} kg</td>
+                  <td>{workout.reps}</td>
+                  <td>{workout.rpe || '—'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : <p>Aucune séance enregistrée.</p>}
+      </section>
+    </div>
+  )
+}
+
+export default App
