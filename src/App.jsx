@@ -87,7 +87,7 @@ function App() {
       return sessions.length >= 2 && Number(sessions[0].weight) > Number(sessions[1].weight)
     })
 
-    return { ...client, isProgressing }
+    return { ...client, sessionCount: clientSessions.length, isProgressing }
   })
 
   const exerciseStats = Object.values(
@@ -253,9 +253,12 @@ function App() {
               {clientProgress.map((client) => (
                 <tr key={client.id}>
                   <td>{client.name}</td>
-                  <td className={client.isProgressing ? 'progressing' : 'stagnating'}>
-                    <span aria-hidden="true">{client.isProgressing ? '↑' : '↓'}</span>
-                    {client.isProgressing ? 'Progression' : 'Stagnation'}
+                  <td
+                    className={client.sessionCount === 1 ? 'beginner' : client.isProgressing ? 'progressing' : 'stagnating'}
+                    style={client.sessionCount === 1 ? { color: '#3b82f6' } : undefined}
+                  >
+                    <span aria-hidden="true">{client.sessionCount === 1 ? '⭐' : client.isProgressing ? '↑' : '↓'}</span>
+                    {client.sessionCount === 1 ? 'Débutant' : client.isProgressing ? 'Progression' : 'Stagnation'}
                   </td>
                 </tr>
               ))}
