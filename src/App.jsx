@@ -254,11 +254,11 @@ function App() {
                 <tr key={client.id}>
                   <td>{client.name}</td>
                   <td
-                    className={client.sessionCount === 1 ? 'beginner' : client.isProgressing ? 'progressing' : 'stagnating'}
+                    className={client.sessionCount === 1 ? 'beginner' : client.sessionCount >= 2 ? client.isProgressing ? 'progressing' : 'stagnating' : undefined}
                     style={client.sessionCount === 1 ? { color: '#3b82f6' } : undefined}
                   >
-                    <span aria-hidden="true">{client.sessionCount === 1 ? '⭐' : client.isProgressing ? '↑' : '↓'}</span>
-                    {client.sessionCount === 1 ? 'Débutant' : client.isProgressing ? 'Progression' : 'Stagnation'}
+                    <span aria-hidden="true">{client.sessionCount === 1 ? '⭐' : client.sessionCount >= 2 ? client.isProgressing ? '↑' : '↓' : null}</span>
+                    {client.sessionCount === 1 ? 'Débutant' : client.sessionCount >= 2 ? client.isProgressing ? 'Progression' : 'Stagnation' : '—'}
                   </td>
                 </tr>
               ))}
