@@ -1024,3 +1024,58 @@ body {
     margin-left: 0;
   }
 }
+.program-details {
+  margin-top: 12px;
+  text-align: left;
+}
+
+.program-details-toggle {
+  width: 100%;
+  background: none;
+  border: 1px solid #FF0000;
+  color: #FF0000;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.program-details-toggle:hover {
+  background: #FF0000;
+  color: #fff;
+}
+
+.program-principle {
+  font-style: italic;
+  color: #1a1a1a;
+  margin-top: 12px;
+}
+
+.program-meta {
+  font-size: 0.9rem;
+  color: #1a1a1a;
+  margin: 6px 0;
+}
+
+.program-day {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.program-day h4 {
+  color: #FF0000;
+  margin-bottom: 6px;
+}
+
+.program-day ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.program-day li {
+  padding: 4px 0;
+  color: #1a1a1a;
+}
