@@ -789,6 +789,7 @@ function App() {
                     <article className={`program-card ${activeProgramId === program.id ? 'active' : ''}`} key={program.id}>
   <button className="program-name" onClick={() => setActiveProgramId(activeProgramId === program.id ? null : program.id)} type="button">
     <strong>{program.name}</strong>
+    {activeProgramId === program.id && <span className="program-active-badge">✓ Actif</span>}
   </button>
   <span className="program-exercise-count">{program.exercises.length} exercice(s)</span>
 
@@ -826,28 +827,24 @@ function App() {
     </div>
   )}
 
-  {activeProgramId === program.id && (
-    <>
-      <form className="exercise-form" onSubmit={addExerciseToProgram}>
-        <input aria-label="Nom de l'exercice" placeholder="Exercice" value={newExercise.name} onChange={(event) => updateExercise('name', event.target.value)} />
-        <input aria-label="Nombre de séries" min="1" placeholder="Séries" type="number" value={newExercise.sets} onChange={(event) => updateExercise('sets', event.target.value)} />
-        <input aria-label="Nombre de répétitions par série" min="1" placeholder="Reps" type="number" value={newExercise.reps} onChange={(event) => updateExercise('reps', event.target.value)} />
-        <input aria-label="Intensité" placeholder="Intensité (ex. 75%)" value={newExercise.intensity} onChange={(event) => updateExercise('intensity', event.target.value)} />
-        <button className="btn btn-primary" type="submit">+ Ajouter l'exercice</button>
-      </form>
-      <div className="program-exercises">
-        {program.exercises.map((exercise) => (
-          <div className="program-exercise-row" key={exercise.id}>
-            <span>
-              <strong>{exercise.name}</strong>
-              <small>{exercise.sets} x {exercise.reps} at {exercise.intensity || '-'} intensity</small>
-            </span>
-            <button aria-label={`Supprimer ${exercise.name}`} className="delete-exercise" onClick={() => removeExerciseFromProgram(program.id, exercise.id)}>×</button>
-          </div>
-        ))}
+  <form className="exercise-form" onSubmit={addExerciseToProgram}>
+    <input aria-label="Nom de l'exercice" placeholder="Exercice" value={newExercise.name} onChange={(event) => updateExercise('name', event.target.value)} />
+    <input aria-label="Nombre de séries" min="1" placeholder="Séries" type="number" value={newExercise.sets} onChange={(event) => updateExercise('sets', event.target.value)} />
+    <input aria-label="Nombre de répétitions par série" min="1" placeholder="Reps" type="number" value={newExercise.reps} onChange={(event) => updateExercise('reps', event.target.value)} />
+    <input aria-label="Intensité" placeholder="Intensité (ex. 75%)" value={newExercise.intensity} onChange={(event) => updateExercise('intensity', event.target.value)} />
+    <button className="btn btn-primary" type="submit">+ Ajouter l'exercice</button>
+  </form>
+  <div className="program-exercises">
+    {program.exercises.map((exercise) => (
+      <div className="program-exercise-row" key={exercise.id}>
+        <span>
+          <strong>{exercise.name}</strong>
+          <small>{exercise.sets} x {exercise.reps} at {exercise.intensity || '-'} intensity</small>
+        </span>
+        <button aria-label={`Supprimer ${exercise.name}`} className="delete-exercise" onClick={() => removeExerciseFromProgram(program.id, exercise.id)}>×</button>
       </div>
-    </>
-  )}
+    ))}
+  </div>
 
   <div className="duplicate-row">
     <select aria-label={`Client cible pour ${program.name}`} value={duplicateTargets[program.id] || ''} onChange={(event) => setDuplicateTargets((current) => ({ ...current, [program.id]: event.target.value }))}>
