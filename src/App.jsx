@@ -613,6 +613,28 @@ function App() {
                     <article className={`program-card ${activeProgramId === program.id ? 'active' : ''}`} key={program.id}>
                       <button className="program-name" onClick={() => setActiveProgramId(activeProgramId === program.id ? null : program.id)} type="button">{program.name}</button>
                       <span className="program-exercise-count">{program.exercises.length} exercice(s)</span>
+                      {program.details && (
+  <div className="program-details">
+    <p className="program-principle">{program.details.principe}</p>
+    <p className="program-meta">
+      {program.details.duree_programme_semaines} semaines · {program.details.seances_par_semaine}x/semaine · {program.details.duree_seance_minutes} min/séance
+    </p>
+    <p className="program-meta"><strong>Échauffement :</strong> {program.details.echauffement}</p>
+    <p className="program-meta"><strong>Étirements :</strong> {program.details.etirements}</p>
+    {program.details.jours.map((jour, index) => (
+      <div key={index} className="program-day">
+        <h4>{jour.nom}</h4>
+        <ul>
+          {jour.exercices.map((exercice, i) => (
+            <li key={i}>
+              <strong>{exercice.nom}</strong> — {exercice.series} x {exercice.repetitions} ({exercice.charge}), repos {exercice.repos_secondes}s
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+)}
                       {activeProgramId === program.id && (
                         <>
                           <form className="exercise-form" onSubmit={addExerciseToProgram}>
