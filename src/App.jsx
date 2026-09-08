@@ -37,7 +37,119 @@ const programTemplates = [
   { category: 'Hybrides', name: 'EMOM', description: 'Un effort programmé au début de chaque minute.' },
   { category: 'Hybrides', name: 'Powerbuilding hybride', description: 'Force et hypertrophie combinées dans une même structure.' },
 ]
-
+const programDetails = {
+  'Full Body': {
+    principe: "Travail complet du corps à chaque séance pour maximiser la fréquence de stimulation sur chaque groupe musculaire, idéal pour les débutants.",
+    duree_programme_semaines: 8,
+    seances_par_semaine: 3,
+    duree_seance_minutes: "45-60",
+    echauffement: "5-10 min de cardio léger (vélo, rameur) puis 2 séries légères de l'exercice principal avant de monter en charge.",
+    etirements: "5-10 min d'étirements légers en fin de séance, focus sur les groupes travaillés.",
+    repos_entre_series_secondes: 90,
+    jours: [
+      { nom: "Séance A", exercices: [
+        { nom: "Squat", series: 3, repetitions: "8-10", charge: "Progressive, RPE 6-7", repos_secondes: 90 },
+        { nom: "Développé couché", series: 3, repetitions: "8-10", charge: "Progressive, RPE 6-7", repos_secondes: 90 },
+        { nom: "Rowing barre", series: 3, repetitions: "8-10", charge: "Progressive, RPE 6-7", repos_secondes: 90 },
+        { nom: "Développé militaire", series: 2, repetitions: "10-12", charge: "Modérée", repos_secondes: 60 },
+        { nom: "Gainage planche", series: 3, repetitions: "30-45s", charge: "Poids du corps", repos_secondes: 45 }
+      ]},
+      { nom: "Séance B", exercices: [
+        { nom: "Soulevé de terre", series: 3, repetitions: "6-8", charge: "Progressive, RPE 6-7", repos_secondes: 120 },
+        { nom: "Développé incliné haltères", series: 3, repetitions: "8-10", charge: "Progressive, RPE 6-7", repos_secondes: 90 },
+        { nom: "Tirage vertical", series: 3, repetitions: "10-12", charge: "Progressive, RPE 6-7", repos_secondes: 90 },
+        { nom: "Fentes marchées", series: 2, repetitions: "10-12 par jambe", charge: "Modérée", repos_secondes: 60 },
+        { nom: "Gainage latéral", series: 3, repetitions: "30s par côté", charge: "Poids du corps", repos_secondes: 45 }
+      ]}
+    ]
+  },
+  'Half Body': {
+    principe: "Alternance entre haut et bas du corps pour permettre plus de volume par groupe musculaire tout en restant simple à suivre.",
+    duree_programme_semaines: 8,
+    seances_par_semaine: 4,
+    duree_seance_minutes: "45-55",
+    echauffement: "5 min cardio léger + 2 séries d'échauffement progressif sur le premier exercice de la séance.",
+    etirements: "5-10 min d'étirements ciblés sur les groupes travaillés du jour.",
+    repos_entre_series_secondes: 90,
+    jours: [
+      { nom: "Jour 1 - Haut du corps", exercices: [
+        { nom: "Développé couché", series: 4, repetitions: "8-10", charge: "Progressive, RPE 7", repos_secondes: 90 },
+        { nom: "Rowing haltère", series: 4, repetitions: "8-10", charge: "Progressive, RPE 7", repos_secondes: 90 },
+        { nom: "Développé militaire", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 75 },
+        { nom: "Curl biceps", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 60 }
+      ]},
+      { nom: "Jour 2 - Bas du corps", exercices: [
+        { nom: "Squat", series: 4, repetitions: "8-10", charge: "Progressive, RPE 7", repos_secondes: 120 },
+        { nom: "Soulevé de terre roumain", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Presse à cuisses", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Mollets debout", series: 3, repetitions: "12-15", charge: "Modérée", repos_secondes: 60 }
+      ]}
+    ]
+  },
+  'Starting Strength': {
+    principe: "Programme de force basé sur la progression linéaire : on ajoute du poids à chaque séance sur les mouvements de base.",
+    duree_programme_semaines: 12,
+    seances_par_semaine: 3,
+    duree_seance_minutes: "45-60",
+    echauffement: "Montée progressive en charge sur chaque exercice principal (5 paliers avant le poids de travail).",
+    etirements: "5 min d'étirements légers en fin de séance, optionnel.",
+    repos_entre_series_secondes: 180,
+    jours: [
+      { nom: "Séance A", exercices: [
+        { nom: "Squat", series: 3, repetitions: "5", charge: "+2.5kg par séance", repos_secondes: 180 },
+        { nom: "Développé couché", series: 3, repetitions: "5", charge: "+2.5kg par séance", repos_secondes: 180 },
+        { nom: "Soulevé de terre", series: 1, repetitions: "5", charge: "+2.5kg par séance", repos_secondes: 180 }
+      ]},
+      { nom: "Séance B", exercices: [
+        { nom: "Squat", series: 3, repetitions: "5", charge: "+2.5kg par séance", repos_secondes: 180 },
+        { nom: "Développé militaire", series: 3, repetitions: "5", charge: "+2.5kg par séance", repos_secondes: 180 },
+        { nom: "Rowing barre", series: 3, repetitions: "5", charge: "+2.5kg par séance", repos_secondes: 180 }
+      ]}
+    ]
+  },
+  'StrongLifts 5x5': {
+    principe: "Cinq séries de cinq répétitions sur les mouvements composés majeurs, progression linéaire simple, alternance A/B.",
+    duree_programme_semaines: 12,
+    seances_par_semaine: 3,
+    duree_seance_minutes: "45-60",
+    echauffement: "2-3 séries légères progressives avant chaque exercice principal.",
+    etirements: "5 min d'étirements légers en fin de séance, optionnel.",
+    repos_entre_series_secondes: 150,
+    jours: [
+      { nom: "Séance A", exercices: [
+        { nom: "Squat", series: 5, repetitions: "5", charge: "+2.5kg par séance", repos_secondes: 150 },
+        { nom: "Développé couché", series: 5, repetitions: "5", charge: "+2.5kg par séance", repos_secondes: 150 },
+        { nom: "Rowing barre", series: 5, repetitions: "5", charge: "+2.5kg par séance", repos_secondes: 150 }
+      ]},
+      { nom: "Séance B", exercices: [
+        { nom: "Squat", series: 5, repetitions: "5", charge: "+2.5kg par séance", repos_secondes: 150 },
+        { nom: "Développé militaire", series: 5, repetitions: "5", charge: "+2.5kg par séance", repos_secondes: 150 },
+        { nom: "Soulevé de terre", series: 1, repetitions: "5", charge: "+2.5kg par séance", repos_secondes: 180 }
+      ]}
+    ]
+  },
+  'Fierce 5': {
+    principe: "Programme simple et équilibré en 3 exercices par séance pour progresser régulièrement sans complexité excessive.",
+    duree_programme_semaines: 10,
+    seances_par_semaine: 3,
+    duree_seance_minutes: "40-50",
+    echauffement: "2 séries légères progressives avant chaque exercice.",
+    etirements: "5 min d'étirements légers en fin de séance, optionnel.",
+    repos_entre_series_secondes: 120,
+    jours: [
+      { nom: "Séance A", exercices: [
+        { nom: "Squat", series: 5, repetitions: "5", charge: "Progressive, RPE 7-8", repos_secondes: 120 },
+        { nom: "Développé couché", series: 5, repetitions: "5", charge: "Progressive, RPE 7-8", repos_secondes: 120 },
+        { nom: "Rowing barre", series: 5, repetitions: "5", charge: "Progressive, RPE 7-8", repos_secondes: 120 }
+      ]},
+      { nom: "Séance B", exercices: [
+        { nom: "Soulevé de terre", series: 5, repetitions: "5", charge: "Progressive, RPE 7-8", repos_secondes: 150 },
+        { nom: "Développé militaire", series: 5, repetitions: "5", charge: "Progressive, RPE 7-8", repos_secondes: 120 },
+        { nom: "Tirage vertical", series: 5, repetitions: "5", charge: "Progressive, RPE 7-8", repos_secondes: 120 }
+      ]}
+    ]
+  }
+}
 function AuthPage() {
   const [mode, setMode] = useState('login')
   const [email, setEmail] = useState('')
@@ -247,21 +359,23 @@ function App() {
   }
 
   const createProgram = async (event) => {
-    event.preventDefault()
-    const name = newProgramName.trim()
-    if (!selectedClientId || !name) return
+  event.preventDefault()
+  const name = newProgramName.trim()
+  if (!selectedClientId || !name) return
 
-    const { data: savedProgram, error } = await supabase.from('programs').insert({ user_id: userId, client_id: selectedClientId, name, exercises: [] }).select().single()
-    if (error) {
-      console.error('Impossible de créer le programme.', error)
-      return
-    }
+  const details = programDetails[name] || null
 
-    const program = { ...savedProgram, clientId: savedProgram.client_id, exercises: savedProgram.exercises || [] }
-    setPrograms((current) => [...current, program])
-    setActiveProgramId(program.id)
-    setNewProgramName('')
+  const { data: savedProgram, error } = await supabase.from('programs').insert({ user_id: userId, client_id: selectedClientId, name, details }).select().single()
+  if (error) {
+    console.error('Impossible de créer le programme.', error)
+    return
   }
+
+  const program = { ...savedProgram, clientId: savedProgram.client_id, exercises: savedProgram.exercises || [] }
+  setPrograms((current) => [...current, program])
+  setActiveProgramId(program.id)
+  setNewProgramName('')
+}
 
   const updateExercise = (field, value) => {
     setNewExercise((current) => ({ ...current, [field]: value }))
