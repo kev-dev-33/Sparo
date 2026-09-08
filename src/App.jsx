@@ -396,22 +396,22 @@ function App() {
     <td>{client.name}</td>
     <td
       className={
-        client.sessionCount === 0
+        client.sessionCount < 2
           ? 'beginner'
           : client.isProgressing
           ? 'progressing'
           : 'stagnating'
       }
-      style={client.sessionCount === 0 ? { color: '#3b82f6' } : undefined}
+      style={client.sessionCount < 2 ? { color: '#3b82f6' } : undefined}
     >
       <span aria-hidden="true">
-        {client.sessionCount === 0
+        {client.sessionCount < 2
           ? '⭐'
           : client.isProgressing
           ? '↑'
           : '↓'}
       </span>{' '}
-      {client.sessionCount === 0
+      {client.sessionCount < 2
         ? 'Débutant'
         : client.isProgressing
         ? 'Progression'
