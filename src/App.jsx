@@ -229,6 +229,7 @@ function App() {
   const [newProgramName, setNewProgramName] = useState('')
   const [newExercise, setNewExercise] = useState(emptyExercise)
   const [activeProgramId, setActiveProgramId] = useState(null)
+  const [expandedDetails, setExpandedDetails] = useState({})
   const [duplicateTargets, setDuplicateTargets] = useState({})
   const [selectedClientId, setSelectedClientId] = useState(null)
   const [newWorkout, setNewWorkout] = useState(emptyWorkout)
@@ -611,60 +612,76 @@ function App() {
                 <div className="program-list">
                   {programs.filter(({ clientId }) => clientId === selectedClientId).map((program) => (
                     <article className={`program-card ${activeProgramId === program.id ? 'active' : ''}`} key={program.id}>
-                      <button className="program-name" onClick={() => setActiveProgramId(activeProgramId === program.id ? null : program.id)} type="button">{program.name}</button>
-                      <span className="program-exercise-count">{program.exercises.length} exercice(s)</span>
-                      {program.details && (
-  <div className="program-details">
-    <p className="program-principle">{program.details.principe}</p>
-    <p className="program-meta">
-      {program.details.duree_programme_semaines} semaines · {program.details.seances_par_semaine}x/semaine · {program.details.duree_seance_minutes} min/séance
-    </p>
-    <p className="program-meta"><strong>Échauffement :</strong> {program.details.echauffement}</p>
-    <p className="program-meta"><strong>Étirements :</strong> {program.details.etirements}</p>
-    {program.details.jours.map((jour, index) => (
-      <div key={index} className="program-day">
-        <h4>{jour.nom}</h4>
-        <ul>
-          {jour.exercices.map((exercice, i) => (
-            <li key={i}>
-              <strong>{exercice.nom}</strong> — {exercice.series} x {exercice.repetitions} ({exercice.charge}), repos {exercice.repos_secondes}s
-            </li>
+  <button className="program-name" onClick={() => setActiveProgramId(activeProgramId === program.id ? null : program.id)} type="button">
+    <strong>{program.name}</strong>
+  </button>
+  <span className="program-exercise-count">{program.exercises.length} exercice(s)</span>
+
+  {program.details && (
+    <div className="program-details">
+      <button
+        type="button"
+        className="program-details-toggle"
+        onClick={() => setExpandedDetails((current) => ({ ...current, [program.id]: !current[program.id] }))}
+      >
+        <span>{expandedDetails[program.id] ? '▲ Réduire le détail' : '▼ Voir le détail du programme'}</span>
+      </button>
+      {expandedDetails[program.id] && (
+        <>
+          <p className="program-principle">{program.details.principe}</p>
+          <p className="program-meta">
+            {program.details.duree_programme_semaines} semaines · {program.details.seances_par_semaine}x/semaine · {program.details.duree_seance_minutes} min/séance
+          </p>
+          <p className="program-meta"><strong>Échauffement :</strong> {program.details.echauffement}</p>
+          <p className="program-meta"><strong>Étirements :</strong> {program.details.etirements}</p>
+          {program.details.jours.map((jour, index) => (
+            <div key={index} className="program-day">
+              <h4>{jour.nom}</h4>
+              <ul>
+                {jour.exercices.map((exercice, i) => (
+                  <li key={i}>
+                    <strong>{exercice.nom}</strong> — {exercice.series} x {exercice.repetitions} ({exercice.charge}), repos {exercice.repos_secondes}s
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
-        </ul>
+        </>
+      )}
+    </div>
+  )}
+
+  {activeProgramId === program.id && (
+    <>
+      <form className="exercise-form" onSubmit={addExerciseToProgram}>
+        <input aria-label="Nom de l'exercice" placeholder="Exercice" value={newExercise.name} onChange={(event) => updateExercise('name', event.target.value)} />
+        <input aria-label="Nombre de séries" min="1" placeholder="Séries" type="number" value={newExercise.sets} onChange={(event) => updateExercise('sets', event.target.value)} />
+        <input aria-label="Nombre de répétitions par série" min="1" placeholder="Reps" type="number" value={newExercise.reps} onChange={(event) => updateExercise('reps', event.target.value)} />
+        <input aria-label="Intensité" placeholder="Intensité (ex. 75%)" value={newExercise.intensity} onChange={(event) => updateExercise('intensity', event.target.value)} />
+        <button className="btn btn-primary" type="submit">+ Ajouter l'exercice</button>
+      </form>
+      <div className="program-exercises">
+        {program.exercises.map((exercise) => (
+          <div className="program-exercise-row" key={exercise.id}>
+            <span>
+              <strong>{exercise.name}</strong>
+              <small>{exercise.sets} x {exercise.reps} at {exercise.intensity || '-'} intensity</small>
+            </span>
+            <button aria-label={`Supprimer ${exercise.name}`} className="delete-exercise" onClick={() => removeExerciseFromProgram(program.id, exercise.id)}>×</button>
+          </div>
+        ))}
       </div>
-    ))}
+    </>
+  )}
+
+  <div className="duplicate-row">
+    <select aria-label={`Client cible pour ${program.name}`} value={duplicateTargets[program.id] || ''} onChange={(event) => setDuplicateTargets((current) => ({ ...current, [program.id]: event.target.value }))}>
+      <option value="">Dupliquer vers...</option>
+      {clients.filter(({ id }) => id !== program.clientId).map((client) => <option key={client.id} value={client.id}>{client.name}</option>)}
+    </select>
+    <button className="text-button" disabled={!duplicateTargets[program.id]} onClick={() => duplicateProgram(program)} type="button">Dupliquer</button>
   </div>
-)}
-                      {activeProgramId === program.id && (
-                        <>
-                          <form className="exercise-form" onSubmit={addExerciseToProgram}>
-                            <input aria-label="Nom de l'exercice" placeholder="Exercice" value={newExercise.name} onChange={(event) => updateExercise('name', event.target.value)} />
-                            <input aria-label="Nombre de séries" min="1" placeholder="Séries" type="number" value={newExercise.sets} onChange={(event) => updateExercise('sets', event.target.value)} />
-                            <input aria-label="Nombre de répétitions par série" min="1" placeholder="Reps" type="number" value={newExercise.reps} onChange={(event) => updateExercise('reps', event.target.value)} />
-                            <input aria-label="Intensité" placeholder="Intensité (ex. 75%)" value={newExercise.intensity} onChange={(event) => updateExercise('intensity', event.target.value)} />
-                            <button className="btn btn-primary" type="submit">+ Ajouter l'exercice</button>
-                          </form>
-                          <div className="program-exercises">
-                            {program.exercises.map((exercise) => (
-                              <div className="program-exercise-row" key={exercise.id}>
-                                <span>
-                                  <strong>{exercise.name}</strong>
-                                  <small>{exercise.sets} x {exercise.reps} at {exercise.intensity || '—'} intensity</small>
-                                </span>
-                                <button aria-label={`Supprimer ${exercise.name}`} className="delete-exercise" onClick={() => removeExerciseFromProgram(program.id, exercise.id)} type="button">×</button>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                      <div className="duplicate-row">
-                        <select aria-label={`Client cible pour ${program.name}`} value={duplicateTargets[program.id] || ''} onChange={(event) => setDuplicateTargets((current) => ({ ...current, [program.id]: event.target.value }))}>
-                          <option value="">Dupliquer vers...</option>
-                          {clients.filter(({ id }) => id !== program.clientId).map((client) => <option key={client.id} value={client.id}>{client.name}</option>)}
-                        </select>
-                        <button className="text-button" disabled={!duplicateTargets[program.id]} onClick={() => duplicateProgram(program)} type="button">Dupliquer</button>
-                      </div>
-                    </article>
+</article>
                   ))}
                   {!programs.some(({ clientId }) => clientId === selectedClientId) && <p className="empty">Créez un programme pour ce client.</p>}
                 </div>
