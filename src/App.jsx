@@ -791,7 +791,7 @@ function App() {
     <strong>{program.name}</strong>
     {activeProgramId === program.id && <span className="program-active-badge">✓ Actif</span>}
   </button>
-  <span className="program-exercise-count">{program.exercises.length} exercice(s)</span>
+  <span className="program-exercise-count">{(program.exercises || []).length} exercice(s)</span>
 
   {program.details && (
     <div className="program-details">
@@ -835,7 +835,7 @@ function App() {
     <button className="btn btn-primary" type="submit">+ Ajouter l'exercice</button>
   </form>
   <div className="program-exercises">
-    {program.exercises.map((exercise) => (
+    {(program.exercises || []).map((exercise) => (
       <div className="program-exercise-row" key={exercise.id}>
         <span>
           <strong>{exercise.name}</strong>
