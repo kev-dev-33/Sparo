@@ -1129,3 +1129,22 @@ body {
   width: 100%;
   font-size: 0.85rem;
 }
+.pending-session {
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px dashed #FF0000;
+  border-radius: 8px;
+}
+
+.pending-session h4 {
+  color: #FF0000;
+  margin-bottom: 8px;
+}
+
+.pending-exercise-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}

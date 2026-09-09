@@ -408,6 +408,7 @@ function App() {
   const [duplicateTargets, setDuplicateTargets] = useState({})
   const [selectedClientId, setSelectedClientId] = useState(null)
   const [newWorkout, setNewWorkout] = useState(emptyWorkout)
+  const [pendingExercises, setPendingExercises] = useState([])
   const [historyExpanded, setHistoryExpanded] = useState(false)
 
   useEffect(() => {
@@ -610,29 +611,43 @@ function App() {
     setPrograms((current) => [...current, { ...savedProgram, clientId: savedProgram.client_id, exercises: savedProgram.exercises || [] }])
   }
 
-  const addWorkout = async (event) => {
-    event.preventDefault()
-    if (!selectedClientId || !newWorkout.exercise.trim() || !newWorkout.weight || !newWorkout.reps) return
+  const addExerciseToSession = (event) => {
+  event.preventDefault()
+  if (!newWorkout.exercise.trim() || !newWorkout.weight || !newWorkout.reps) return
+  setPendingExercises((current) => [...current, { ...newWorkout, id: Date.now() }])
+  setNewWorkout(emptyWorkout)
+}
 
-    const { data: savedWorkout, error } = await supabase.from('workouts').insert({ user_id: userId, client_id: selectedClientId, exercise: newWorkout.exercise.trim(), weight: Number(newWorkout.weight), reps: Number(newWorkout.reps), rpe: newWorkout.rpe ? Number(newWorkout.rpe) : null, date: new Date().toLocaleDateString('fr-FR') }).select().single()
-    if (error) {
-      console.error('Impossible d’enregistrer la séance.', error)
-      return
-    }
+const removePendingExercise = (id) => {
+  setPendingExercises((current) => current.filter((exercise) => exercise.id !== id))
+}
 
-    setWorkouts((current) => [{ ...savedWorkout, clientId: savedWorkout.client_id }, ...current])
-    setNewWorkout(emptyWorkout)
+const saveSession = async () => {
+  if (!selectedClientId || !pendingExercises.length) return
+
+  const sessionDate = new Date().toLocaleDateString('fr-FR')
+  const rows = pendingExercises.map((exercise) => ({
+    user_id: userId,
+    client_id: selectedClientId,
+    exercise: exercise.exercise.trim(),
+    weight: exercise.weight,
+    reps: exercise.reps,
+    rpe: exercise.rpe,
+    date: sessionDate,
+  }))
+
+  const { data: savedWorkouts, error } = await supabase.from('workouts').insert(rows).select()
+  if (error) {
+    console.error('Impossible d\'enregistrer la séance.', error)
+    return
   }
 
-  const removeWorkout = async (workoutId) => {
-    const { error } = await supabase.from('workouts').delete().eq('user_id', userId).eq('id', workoutId)
-    if (error) {
-      console.error('Impossible de supprimer la séance.', error)
-      return
-    }
-
-    setWorkouts((current) => current.filter(({ id }) => id !== workoutId))
-  }
+  setWorkouts((current) => [
+    ...savedWorkouts.map((workout) => ({ ...workout, clientId: workout.client_id })),
+    ...current,
+  ])
+  setPendingExercises([])
+}
 
   const exportClientPdf = () => {
     window.print()
@@ -878,13 +893,26 @@ function App() {
                 </div>
               </div>
 
-              <form className="form-group" onSubmit={addWorkout}>
-                <input aria-label="Exercice" placeholder="Exercice" value={newWorkout.exercise} onChange={(event) => updateWorkout('exercise', event.target.value)} />
-                <input aria-label="Poids en kilogrammes" min="0" placeholder="Poids (kg)" type="number" value={newWorkout.weight} onChange={(event) => updateWorkout('weight', event.target.value)} />
-                <input aria-label="Nombre de répétitions" min="1" placeholder="Reps" type="number" value={newWorkout.reps} onChange={(event) => updateWorkout('reps', event.target.value)} />
-                <input aria-label="RPE sur 10" max="10" min="1" placeholder="RPE / 10" step="0.5" type="number" value={newWorkout.rpe} onChange={(event) => updateWorkout('rpe', event.target.value)} />
-                <button className="btn btn-primary" type="submit">+ Enregistrer la séance</button>
-              </form>
+              <form className="form-group" onSubmit={addExerciseToSession}>
+  <input aria-label="Exercice" placeholder="Exercice" value={newWorkout.exercise} onChange={(event) => updateWorkout('exercise', event.target.value)} />
+  <input aria-label="Poids en kilogrammes" min="0" placeholder="Poids (kg)" type="number" value={newWorkout.weight} onChange={(event) => updateWorkout('weight', event.target.value)} />
+  <input aria-label="Nombre de répétitions" min="1" placeholder="Reps" type="number" value={newWorkout.reps} onChange={(event) => updateWorkout('reps', event.target.value)} />
+  <input aria-label="RPE sur 10" max="10" min="1" placeholder="RPE / 10" step="0.5" type="number" value={newWorkout.rpe} onChange={(event) => updateWorkout('rpe', event.target.value)} />
+  <button className="btn btn-primary" type="submit">+ Ajouter l'exercice</button>
+</form>
+
+{pendingExercises.length > 0 && (
+  <div className="pending-session">
+    <h4>Exercices de cette séance</h4>
+    {pendingExercises.map((exercise) => (
+      <div className="pending-exercise-row" key={exercise.id}>
+        <span>{exercise.exercise} — {exercise.weight}kg x {exercise.reps} (RPE {exercise.rpe || '-'})</span>
+        <button aria-label={`Retirer ${exercise.exercise}`} className="delete-exercise" onClick={() => removePendingExercise(exercise.id)} type="button">×</button>
+      </div>
+    ))}
+    <button className="btn btn-primary" onClick={saveSession} type="button">✓ Enregistrer la séance complète</button>
+  </div>
+)}
 
               <div className="stats-block">
                 <div className="section-heading compact-heading">
