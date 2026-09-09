@@ -324,6 +324,391 @@ const programDetails = {
       ]}
     ]
   }
+  ,
+  'Push Pull Legs': {
+    principe: "Split en 3 jours répétés deux fois par semaine : poussée (pecs/épaules/triceps), tirage (dos/biceps), jambes.",
+    duree_programme_semaines: 12,
+    seances_par_semaine: 6,
+    duree_seance_minutes: "60-75",
+    echauffement: "5-10 min cardio léger + 2-3 séries progressives sur le premier exercice.",
+    etirements: "10 min d'étirements ciblés en fin de séance.",
+    repos_entre_series_secondes: 90,
+    jours: [
+      { nom: "Jour 1 - Poussée", exercices: [
+        { nom: "Développé couché", series: 4, repetitions: "6-10", charge: "Modérée-lourde", repos_secondes: 90 },
+        { nom: "Développé militaire", series: 3, repetitions: "8-10", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Élévations latérales", series: 3, repetitions: "12-15", charge: "Légère", repos_secondes: 60 },
+        { nom: "Extension triceps", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 60 }
+      ]},
+      { nom: "Jour 2 - Tirage", exercices: [
+        { nom: "Tirage vertical", series: 4, repetitions: "8-10", charge: "Modérée-lourde", repos_secondes: 90 },
+        { nom: "Rowing barre", series: 3, repetitions: "8-10", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Face pull", series: 3, repetitions: "12-15", charge: "Légère", repos_secondes: 60 },
+        { nom: "Curl biceps", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 60 }
+      ]},
+      { nom: "Jour 3 - Jambes", exercices: [
+        { nom: "Squat", series: 4, repetitions: "6-10", charge: "Modérée-lourde", repos_secondes: 120 },
+        { nom: "Soulevé de terre roumain", series: 3, repetitions: "8-10", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Presse à cuisses", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Mollets debout", series: 4, repetitions: "12-15", charge: "Modérée", repos_secondes: 60 }
+      ]}
+    ]
+  },
+  'Bro Split': {
+    principe: "Un groupe musculaire ciblé par séance, 5 jours par semaine, pour maximiser le volume sur chaque muscle une fois par semaine.",
+    duree_programme_semaines: 10,
+    seances_par_semaine: 5,
+    duree_seance_minutes: "60-70",
+    echauffement: "5-10 min cardio léger + 2 séries progressives sur le premier exercice.",
+    etirements: "10 min d'étirements ciblés en fin de séance.",
+    repos_entre_series_secondes: 75,
+    jours: [
+      { nom: "Jour 1 - Pectoraux", exercices: [
+        { nom: "Développé couché", series: 4, repetitions: "8-12", charge: "Modérée-lourde", repos_secondes: 90 },
+        { nom: "Développé incliné haltères", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 75 },
+        { nom: "Écarté couché", series: 3, repetitions: "12-15", charge: "Légère", repos_secondes: 60 }
+      ]},
+      { nom: "Jour 2 - Dos", exercices: [
+        { nom: "Tirage vertical", series: 4, repetitions: "8-12", charge: "Modérée-lourde", repos_secondes: 90 },
+        { nom: "Rowing barre", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 75 },
+        { nom: "Tirage horizontal", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 75 }
+      ]},
+      { nom: "Jour 3 - Épaules", exercices: [
+        { nom: "Développé militaire", series: 4, repetitions: "8-10", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Élévations latérales", series: 3, repetitions: "12-15", charge: "Légère", repos_secondes: 60 },
+        { nom: "Oiseau", series: 3, repetitions: "12-15", charge: "Légère", repos_secondes: 60 }
+      ]},
+      { nom: "Jour 4 - Bras", exercices: [
+        { nom: "Curl biceps", series: 4, repetitions: "10-12", charge: "Modérée", repos_secondes: 60 },
+        { nom: "Extension triceps", series: 4, repetitions: "10-12", charge: "Modérée", repos_secondes: 60 },
+        { nom: "Curl marteau", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 60 }
+      ]},
+      { nom: "Jour 5 - Jambes", exercices: [
+        { nom: "Squat", series: 4, repetitions: "8-12", charge: "Modérée-lourde", repos_secondes: 120 },
+        { nom: "Presse à cuisses", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Mollets debout", series: 4, repetitions: "12-15", charge: "Modérée", repos_secondes: 60 }
+      ]}
+    ]
+  },
+  'FST-7': {
+    principe: "Séries de finition à 7 répétitions en fin d'exercice pour maximiser le volume musculaire et l'étirement fascial.",
+    duree_programme_semaines: 8,
+    seances_par_semaine: 5,
+    duree_seance_minutes: "65-80",
+    echauffement: "5-10 min cardio léger + 2 séries progressives sur le premier exercice.",
+    etirements: "10 min d'étirements ciblés en fin de séance.",
+    repos_entre_series_secondes: 60,
+    jours: [
+      { nom: "Jour 1 - Pectoraux + FST-7", exercices: [
+        { nom: "Développé couché", series: 4, repetitions: "8-10", charge: "Modérée-lourde", repos_secondes: 90 },
+        { nom: "Développé incliné haltères", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 75 },
+        { nom: "Écarté couché (FST-7)", series: 7, repetitions: "7", charge: "Légère, repos court 30s", repos_secondes: 30 }
+      ]},
+      { nom: "Jour 2 - Dos + FST-7", exercices: [
+        { nom: "Tirage vertical", series: 4, repetitions: "8-10", charge: "Modérée-lourde", repos_secondes: 90 },
+        { nom: "Rowing barre", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 75 },
+        { nom: "Tirage horizontal (FST-7)", series: 7, repetitions: "7", charge: "Légère, repos court 30s", repos_secondes: 30 }
+      ]},
+      { nom: "Jour 3 - Épaules + FST-7", exercices: [
+        { nom: "Développé militaire", series: 4, repetitions: "8-10", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Élévations latérales (FST-7)", series: 7, repetitions: "7", charge: "Légère, repos court 30s", repos_secondes: 30 }
+      ]}
+    ]
+  },
+  'PHAT': {
+    principe: "Power Hypertrophy Adaptive Training : alternance entre séances de puissance (charges lourdes) et séances d'hypertrophie (volume).",
+    duree_programme_semaines: 12,
+    seances_par_semaine: 5,
+    duree_seance_minutes: "60-75",
+    echauffement: "5-10 min cardio léger + montée progressive sur l'exercice principal.",
+    etirements: "10 min d'étirements en fin de séance.",
+    repos_entre_series_secondes: 120,
+    jours: [
+      { nom: "Jour 1 - Haut Puissance", exercices: [
+        { nom: "Développé couché", series: 3, repetitions: "3-5", charge: "Lourde, RPE 8-9", repos_secondes: 150 },
+        { nom: "Rowing barre", series: 3, repetitions: "3-5", charge: "Lourde, RPE 8-9", repos_secondes: 150 }
+      ]},
+      { nom: "Jour 2 - Bas Puissance", exercices: [
+        { nom: "Squat", series: 3, repetitions: "3-5", charge: "Lourde, RPE 8-9", repos_secondes: 180 },
+        { nom: "Soulevé de terre", series: 2, repetitions: "3-5", charge: "Lourde, RPE 8-9", repos_secondes: 180 }
+      ]},
+      { nom: "Jour 3 - Pectoraux/Épaules Hypertrophie", exercices: [
+        { nom: "Développé incliné haltères", series: 4, repetitions: "8-12", charge: "Modérée", repos_secondes: 75 },
+        { nom: "Élévations latérales", series: 3, repetitions: "12-15", charge: "Légère", repos_secondes: 60 }
+      ]},
+      { nom: "Jour 4 - Dos Hypertrophie", exercices: [
+        { nom: "Tirage vertical", series: 4, repetitions: "8-12", charge: "Modérée", repos_secondes: 75 },
+        { nom: "Rowing haltère", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 75 }
+      ]},
+      { nom: "Jour 5 - Jambes Hypertrophie", exercices: [
+        { nom: "Presse à cuisses", series: 4, repetitions: "10-12", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Leg curl", series: 3, repetitions: "12-15", charge: "Modérée", repos_secondes: 60 }
+      ]}
+    ]
+  },
+  'DoggCrapp': {
+    principe: "Entraînement intense basé sur des séries d'extension (rest-pause) avec progression de charge et récupération ciblée entre les séances.",
+    duree_programme_semaines: 10,
+    seances_par_semaine: 3,
+    duree_seance_minutes: "50-65",
+    echauffement: "5-10 min cardio léger + 2 séries progressives sur l'exercice principal.",
+    etirements: "10 min d'étirements ciblés en fin de séance.",
+    repos_entre_series_secondes: 90,
+    jours: [
+      { nom: "Séance A", exercices: [
+        { nom: "Squat (rest-pause)", series: 1, repetitions: "15-20 (rest-pause)", charge: "Lourde, RPE 9", repos_secondes: 90 },
+        { nom: "Développé couché (rest-pause)", series: 1, repetitions: "15-20 (rest-pause)", charge: "Lourde, RPE 9", repos_secondes: 90 },
+        { nom: "Rowing barre (rest-pause)", series: 1, repetitions: "15-20 (rest-pause)", charge: "Lourde, RPE 9", repos_secondes: 90 }
+      ]},
+      { nom: "Séance B", exercices: [
+        { nom: "Soulevé de terre (rest-pause)", series: 1, repetitions: "15-20 (rest-pause)", charge: "Lourde, RPE 9", repos_secondes: 120 },
+        { nom: "Développé militaire (rest-pause)", series: 1, repetitions: "15-20 (rest-pause)", charge: "Lourde, RPE 9", repos_secondes: 90 },
+        { nom: "Tirage vertical (rest-pause)", series: 1, repetitions: "15-20 (rest-pause)", charge: "Lourde, RPE 9", repos_secondes: 90 }
+      ]}
+    ]
+  },
+  'German Volume Training': {
+    principe: "Dix séries de dix répétitions sur un exercice principal par groupe musculaire pour un volume d'entraînement très élevé.",
+    duree_programme_semaines: 8,
+    seances_par_semaine: 4,
+    duree_seance_minutes: "60-75",
+    echauffement: "5-10 min cardio léger + 2 séries légères avant l'exercice principal.",
+    etirements: "10 min d'étirements en fin de séance.",
+    repos_entre_series_secondes: 90,
+    jours: [
+      { nom: "Jour 1 - Pectoraux/Dos", exercices: [
+        { nom: "Développé couché (GVT)", series: 10, repetitions: "10", charge: "Modérée, RPE 7", repos_secondes: 90 },
+        { nom: "Rowing barre (GVT)", series: 10, repetitions: "10", charge: "Modérée, RPE 7", repos_secondes: 90 }
+      ]},
+      { nom: "Jour 2 - Jambes", exercices: [
+        { nom: "Squat (GVT)", series: 10, repetitions: "10", charge: "Modérée, RPE 7", repos_secondes: 120 }
+      ]},
+      { nom: "Jour 3 - Épaules/Bras", exercices: [
+        { nom: "Développé militaire (GVT)", series: 10, repetitions: "10", charge: "Modérée, RPE 7", repos_secondes: 90 },
+        { nom: "Curl biceps (GVT)", series: 10, repetitions: "10", charge: "Modérée, RPE 7", repos_secondes: 75 }
+      ]},
+      { nom: "Jour 4 - Jambes/Mollets", exercices: [
+        { nom: "Soulevé de terre roumain (GVT)", series: 10, repetitions: "10", charge: "Modérée, RPE 7", repos_secondes: 120 }
+      ]}
+    ]
+  },
+  '5/3/1 Wendler': {
+    principe: "Cycles de force progressifs basés sur les 4 mouvements clés, avec des paliers de pourcentage sur 4 semaines (3/3/1/deload).",
+    duree_programme_semaines: 16,
+    seances_par_semaine: 4,
+    duree_seance_minutes: "50-65",
+    echauffement: "Montée progressive en charge sur chaque exercice principal.",
+    etirements: "5-10 min d'étirements légers en fin de séance.",
+    repos_entre_series_secondes: 150,
+    jours: [
+      { nom: "Jour 1 - Squat", exercices: [
+        { nom: "Squat", series: 3, repetitions: "5/5/1+", charge: "% du 1RM, cycle Wendler", repos_secondes: 180 },
+        { nom: "Fentes", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 75 }
+      ]},
+      { nom: "Jour 2 - Bench", exercices: [
+        { nom: "Développé couché", series: 3, repetitions: "5/5/1+", charge: "% du 1RM, cycle Wendler", repos_secondes: 150 },
+        { nom: "Rowing haltère", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 75 }
+      ]},
+      { nom: "Jour 3 - Deadlift", exercices: [
+        { nom: "Soulevé de terre", series: 3, repetitions: "5/5/1+", charge: "% du 1RM, cycle Wendler", repos_secondes: 180 },
+        { nom: "Gainage planche", series: 3, repetitions: "45-60s", charge: "Poids du corps", repos_secondes: 45 }
+      ]},
+      { nom: "Jour 4 - Overhead Press", exercices: [
+        { nom: "Développé militaire", series: 3, repetitions: "5/5/1+", charge: "% du 1RM, cycle Wendler", repos_secondes: 150 },
+        { nom: "Tirage vertical", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 75 }
+      ]}
+    ]
+  },
+  'Cube Method': {
+    principe: "Rotation de séances de force lourde, vitesse et répétitions sur les mouvements de base pour développer force et puissance.",
+    duree_programme_semaines: 12,
+    seances_par_semaine: 3,
+    duree_seance_minutes: "60-75",
+    echauffement: "Montée progressive en charge avant l'exercice principal.",
+    etirements: "10 min d'étirements en fin de séance.",
+    repos_entre_series_secondes: 180,
+    jours: [
+      { nom: "Jour 1 - Force lourde", exercices: [
+        { nom: "Squat", series: 5, repetitions: "1-3", charge: "Très lourde, RPE 9", repos_secondes: 240 }
+      ]},
+      { nom: "Jour 2 - Répétitions", exercices: [
+        { nom: "Développé couché", series: 3, repetitions: "8-10", charge: "Modérée", repos_secondes: 120 }
+      ]},
+      { nom: "Jour 3 - Vitesse", exercices: [
+        { nom: "Soulevé de terre (vitesse)", series: 8, repetitions: "2-3", charge: "Légère-modérée, explosive", repos_secondes: 90 }
+      ]}
+    ]
+  },
+  'Sheiko': {
+    principe: "Plan de force russe à haut volume et grande fréquence technique sur squat, bench et deadlift, avec charges sous-maximales.",
+    duree_programme_semaines: 12,
+    seances_par_semaine: 4,
+    duree_seance_minutes: "75-90",
+    echauffement: "Montée progressive complète en charge sur chaque exercice.",
+    etirements: "10 min d'étirements en fin de séance.",
+    repos_entre_series_secondes: 120,
+    jours: [
+      { nom: "Jour 1", exercices: [
+        { nom: "Squat", series: 6, repetitions: "3-5", charge: "70-80% du 1RM", repos_secondes: 120 },
+        { nom: "Développé couché", series: 6, repetitions: "3-5", charge: "70-80% du 1RM", repos_secondes: 120 }
+      ]},
+      { nom: "Jour 2", exercices: [
+        { nom: "Soulevé de terre", series: 5, repetitions: "3-5", charge: "70-80% du 1RM", repos_secondes: 150 },
+        { nom: "Développé couché prise serrée", series: 5, repetitions: "5-6", charge: "Modérée", repos_secondes: 100 }
+      ]},
+      { nom: "Jour 3", exercices: [
+        { nom: "Squat", series: 6, repetitions: "3-5", charge: "70-80% du 1RM", repos_secondes: 120 },
+        { nom: "Développé couché", series: 6, repetitions: "3-5", charge: "70-80% du 1RM", repos_secondes: 120 }
+      ]},
+      { nom: "Jour 4", exercices: [
+        { nom: "Développé couché", series: 6, repetitions: "3-5", charge: "70-80% du 1RM", repos_secondes: 120 },
+        { nom: "Squat léger", series: 4, repetitions: "5-6", charge: "Modérée", repos_secondes: 100 }
+      ]}
+    ]
+  },
+  'Smolov': {
+    principe: "Cycle exigeant à très haut volume, centré sur la progression du squat sur plusieurs semaines avec charges quasi-maximales.",
+    duree_programme_semaines: 13,
+    seances_par_semaine: 4,
+    duree_seance_minutes: "60-90",
+    echauffement: "Montée progressive complète en charge avant le squat.",
+    etirements: "10 min d'étirements en fin de séance.",
+    repos_entre_series_secondes: 180,
+    jours: [
+      { nom: "Jour 1 - Volume", exercices: [
+        { nom: "Squat", series: 4, repetitions: "9", charge: "70% du 1RM", repos_secondes: 180 }
+      ]},
+      { nom: "Jour 2 - Intensité", exercices: [
+        { nom: "Squat", series: 5, repetitions: "7", charge: "75% du 1RM", repos_secondes: 180 }
+      ]},
+      { nom: "Jour 3 - Technique", exercices: [
+        { nom: "Squat", series: 7, repetitions: "5", charge: "80% du 1RM", repos_secondes: 180 }
+      ]},
+      { nom: "Jour 4 - Récupération active", exercices: [
+        { nom: "Squat", series: 10, repetitions: "3", charge: "85% du 1RM", repos_secondes: 210 }
+      ]}
+    ]
+  },
+  'Conjugate Method': {
+    principe: "Travail alterné de force maximale (max effort), vitesse et effort dynamique, avec rotation régulière des exercices d'accessoire.",
+    duree_programme_semaines: 12,
+    seances_par_semaine: 4,
+    duree_seance_minutes: "60-75",
+    echauffement: "Montée progressive en charge sur l'exercice max effort du jour.",
+    etirements: "10 min d'étirements en fin de séance.",
+    repos_entre_series_secondes: 150,
+    jours: [
+      { nom: "Jour 1 - Max Effort Haut du corps", exercices: [
+        { nom: "Développé couché (variante)", series: 5, repetitions: "1-3", charge: "Très lourde, RPE 9", repos_secondes: 180 },
+        { nom: "Rowing haltère", series: 4, repetitions: "8-10", charge: "Modérée", repos_secondes: 90 }
+      ]},
+      { nom: "Jour 2 - Effort Dynamique Bas du corps", exercices: [
+        { nom: "Squat (vitesse)", series: 8, repetitions: "2-3", charge: "50-60% du 1RM, explosive", repos_secondes: 60 }
+      ]},
+      { nom: "Jour 3 - Max Effort Bas du corps", exercices: [
+        { nom: "Soulevé de terre (variante)", series: 5, repetitions: "1-3", charge: "Très lourde, RPE 9", repos_secondes: 180 }
+      ]},
+      { nom: "Jour 4 - Effort Dynamique Haut du corps", exercices: [
+        { nom: "Développé couché (vitesse)", series: 9, repetitions: "3", charge: "50-60% du 1RM, explosive", repos_secondes: 60 }
+      ]}
+    ]
+  },
+  'Daily Undulating Periodization': {
+    principe: "Intensité et volume varient à chaque séance (force / hypertrophie / endurance) pour stimuler différemment les fibres musculaires.",
+    duree_programme_semaines: 10,
+    seances_par_semaine: 3,
+    duree_seance_minutes: "60-75",
+    echauffement: "5-10 min cardio léger + montée progressive selon le jour.",
+    etirements: "10 min d'étirements en fin de séance.",
+    repos_entre_series_secondes: 100,
+    jours: [
+      { nom: "Jour 1 - Force", exercices: [
+        { nom: "Squat", series: 4, repetitions: "4-6", charge: "Lourde, RPE 8", repos_secondes: 150 },
+        { nom: "Développé couché", series: 4, repetitions: "4-6", charge: "Lourde, RPE 8", repos_secondes: 150 }
+      ]},
+      { nom: "Jour 2 - Hypertrophie", exercices: [
+        { nom: "Squat", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Développé couché", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 90 }
+      ]},
+      { nom: "Jour 3 - Endurance", exercices: [
+        { nom: "Squat", series: 3, repetitions: "15-20", charge: "Légère", repos_secondes: 60 },
+        { nom: "Développé couché", series: 3, repetitions: "15-20", charge: "Légère", repos_secondes: 60 }
+      ]}
+    ]
+  },
+  'Block Periodization': {
+    principe: "Cycles successifs dédiés au volume, à la force et au pic de performance, chaque bloc préparant le suivant.",
+    duree_programme_semaines: 12,
+    seances_par_semaine: 4,
+    duree_seance_minutes: "60-80",
+    echauffement: "Montée progressive en charge selon le bloc en cours.",
+    etirements: "10 min d'étirements en fin de séance.",
+    repos_entre_series_secondes: 120,
+    jours: [
+      { nom: "Bloc 1 - Volume (sem 1-4)", exercices: [
+        { nom: "Squat", series: 4, repetitions: "10-12", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Développé couché", series: 4, repetitions: "10-12", charge: "Modérée", repos_secondes: 90 }
+      ]},
+      { nom: "Bloc 2 - Force (sem 5-8)", exercices: [
+        { nom: "Squat", series: 5, repetitions: "5-6", charge: "Modérée-lourde", repos_secondes: 150 },
+        { nom: "Développé couché", series: 5, repetitions: "5-6", charge: "Modérée-lourde", repos_secondes: 150 }
+      ]},
+      { nom: "Bloc 3 - Pic (sem 9-12)", exercices: [
+        { nom: "Squat", series: 4, repetitions: "2-3", charge: "Lourde, RPE 9", repos_secondes: 210 },
+        { nom: "Développé couché", series: 4, repetitions: "2-3", charge: "Lourde, RPE 9", repos_secondes: 210 }
+      ]}
+    ]
+  },
+  'EMOM': {
+    principe: "Un effort programmé au début de chaque minute (Every Minute On the Minute), combinant intensité et récupération contrôlée.",
+    duree_programme_semaines: 8,
+    seances_par_semaine: 3,
+    duree_seance_minutes: "30-45",
+    echauffement: "5-10 min cardio léger + mobilité articulaire.",
+    etirements: "5-10 min d'étirements en fin de séance.",
+    repos_entre_series_secondes: 0,
+    jours: [
+      { nom: "Séance A", exercices: [
+        { nom: "Squat (EMOM 10min)", series: 10, repetitions: "5 par minute", charge: "Modérée", repos_secondes: 0 },
+        { nom: "Développé couché (EMOM 10min)", series: 10, repetitions: "5 par minute", charge: "Modérée", repos_secondes: 0 }
+      ]},
+      { nom: "Séance B", exercices: [
+        { nom: "Kettlebell swing (EMOM 8min)", series: 8, repetitions: "12 par minute", charge: "Légère-modérée", repos_secondes: 0 },
+        { nom: "Burpees (EMOM 8min)", series: 8, repetitions: "8 par minute", charge: "Poids du corps", repos_secondes: 0 }
+      ]}
+    ]
+  },
+  'Powerbuilding hybride': {
+    principe: "Force et hypertrophie combinées dans une même structure de séance, avec un exercice principal lourd suivi d'accessoires en volume.",
+    duree_programme_semaines: 12,
+    seances_par_semaine: 4,
+    duree_seance_minutes: "65-80",
+    echauffement: "5-10 min cardio léger + montée progressive sur l'exercice principal.",
+    etirements: "10 min d'étirements en fin de séance.",
+    repos_entre_series_secondes: 120,
+    jours: [
+      { nom: "Jour 1 - Squat", exercices: [
+        { nom: "Squat", series: 5, repetitions: "5", charge: "Lourde, RPE 8", repos_secondes: 180 },
+        { nom: "Presse à cuisses", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Leg curl", series: 3, repetitions: "12-15", charge: "Modérée", repos_secondes: 60 }
+      ]},
+      { nom: "Jour 2 - Bench", exercices: [
+        { nom: "Développé couché", series: 5, repetitions: "5", charge: "Lourde, RPE 8", repos_secondes: 180 },
+        { nom: "Développé incliné haltères", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 75 },
+        { nom: "Écarté couché", series: 3, repetitions: "12-15", charge: "Légère", repos_secondes: 60 }
+      ]},
+      { nom: "Jour 3 - Deadlift", exercices: [
+        { nom: "Soulevé de terre", series: 5, repetitions: "5", charge: "Lourde, RPE 8", repos_secondes: 180 },
+        { nom: "Rowing barre", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 90 },
+        { nom: "Tirage vertical", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 75 }
+      ]},
+      { nom: "Jour 4 - Overhead Press", exercices: [
+        { nom: "Développé militaire", series: 5, repetitions: "5", charge: "Lourde, RPE 8", repos_secondes: 150 },
+        { nom: "Élévations latérales", series: 3, repetitions: "12-15", charge: "Légère", repos_secondes: 60 },
+        { nom: "Curl biceps", series: 3, repetitions: "10-12", charge: "Modérée", repos_secondes: 60 }
+      ]}
+    ]
+  }
 }
 function AuthPage() {
   const [mode, setMode] = useState('login')
