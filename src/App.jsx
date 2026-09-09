@@ -898,41 +898,57 @@ function App() {
                     <div className="stat-line"><span>Min <b>{stat.min} kg</b></span><span>Max <b>{stat.max} kg</b></span><span>Moyenne <b>{stat.avg.toFixed(1)} kg</b></span></div>
                     <p style={{ color: '#FF0000', fontWeight: 700 }}>1RM estimé: {stat.oneRepMax.toFixed(1)} kg</p>
                     {(() => {
-                      const chartSessions = clientWorkouts
-                        .filter(({ exercise }) => exercise === stat.exercise)
-                        .sort((first, second) => new Date(first.date.split('/').reverse().join('-')) - new Date(second.date.split('/').reverse().join('-')))
-                      const chartWidth = 600
-                      const chartHeight = 190
-                      const chartPadding = { top: 18, right: 18, bottom: 38, left: 48 }
-                      const plotWidth = chartWidth - chartPadding.left - chartPadding.right
-                      const plotHeight = chartHeight - chartPadding.top - chartPadding.bottom
-                      const weights = chartSessions.map(({ weight }) => Number(weight))
-                      const chartMin = Math.min(...weights)
-                      const chartMax = Math.max(...weights)
-                      const weightRange = chartMax - chartMin || 1
-                      const points = chartSessions.map((workout, index) => ({
-                        x: chartPadding.left + (chartSessions.length === 1 ? plotWidth / 2 : (index / (chartSessions.length - 1)) * plotWidth),
-                        y: chartPadding.top + ((chartMax - Number(workout.weight)) / weightRange) * plotHeight,
-                      }))
+  const chartSessions = clientWorkouts
+    .filter(({ exercise }) => exercise === stat.exercise)
+    .sort((first, second) => new Date(first.date.split('/').reverse().join('-')) - new Date(second.date.split('/').reverse().join('-')))
+  const chartWidth = 600
+  const chartHeight = 190
+  const chartPadding = { top: 18, right: 18, bottom: 38, left: 48 }
+  const plotWidth = chartWidth - chartPadding.left - chartPadding.right
+  const plotHeight = chartHeight - chartPadding.top - chartPadding.bottom
+  const weights = chartSessions.map(({ weight }) => Number(weight))
+  const chartMin = Math.min(...weights)
+  const chartMax = Math.max(...weights)
+  const weightRange = chartMax - chartMin || 1
+  const points = chartSessions.map((workout, index) => ({
+    x: chartPadding.left + (chartSessions.length === 1 ? plotWidth / 2 : (index / (chartSessions.length - 1)) * plotWidth),
+    y: chartPadding.top + ((chartMax - Number(workout.weight)) / weightRange) * plotHeight,
+  }))
 
-                      return (
-                        <div className="progression-chart">
-                          <svg aria-label={`Progression du poids pour ${stat.exercise}`} role="img" viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
-                            <line className="chart-axis" x1={chartPadding.left} x2={chartPadding.left} y1={chartPadding.top} y2={chartHeight - chartPadding.bottom} />
-                            <line className="chart-axis" x1={chartPadding.left} x2={chartWidth - chartPadding.right} y1={chartHeight - chartPadding.bottom} y2={chartHeight - chartPadding.bottom} />
-                            <text className="chart-y-label" x="8" y={chartPadding.top + 4}>{chartMax} kg</text>
-                            <text className="chart-y-label" x="8" y={chartHeight - chartPadding.bottom}>{chartMin} kg</text>
-                            <polyline className="chart-line" fill="none" points={points.map(({ x, y }) => `${x},${y}`).join(' ')} />
-                            {points.map(({ x, y }, index) => (
-                              <g key={chartSessions[index].id}>
-                                <circle className="chart-dot" cx={x} cy={y} r="4" />
-                                <text className="chart-x-label" textAnchor="middle" x={x} y={chartHeight - 12}>{chartSessions[index].date}</text>
-                              </g>
-                            ))}
-                          </svg>
-                        </div>
-                      )
-                    })()}
+  return (
+    <>
+      <div className="progression-chart">
+        <svg aria-label={`Progression du poids pour ${stat.exercise}`} role="img" viewBox={`0 0 ${chartWidth} ${chartHeight}`}>
+          <line className="chart-axis" x1={chartPadding.left} x2={chartPadding.left} y1={chartPadding.top} y2={chartHeight - chartPadding.bottom} />
+          <line className="chart-axis" x1={chartPadding.left} x2={chartWidth - chartPadding.right} y1={chartHeight - chartPadding.bottom} y2={chartHeight - chartPadding.bottom} />
+          <text className="chart-y-label" x="8" y={chartPadding.top + 4}>{chartMax} kg</text>
+          <text className="chart-y-label" x="8" y={chartHeight - chartPadding.bottom}>{chartMin} kg</text>
+          <polyline className="chart-line" fill="none" points={points.map(({ x, y }) => `${x},${y}`).join(' ')} />
+          {points.map(({ x, y }, index) => (
+            <g key={chartSessions[index].id}>
+              <circle className="chart-dot" cx={x} cy={y} r="4" />
+              <text className="chart-x-label" textAnchor="middle" x={x} y={chartHeight - 12}>{chartSessions[index].date}</text>
+            </g>
+          ))}
+        </svg>
+      </div>
+      <div className="session-breakdown">
+        {chartSessions.map((session, index) => (
+          <div className="session-compartment" key={session.id}>
+            <h5>Séance {index + 1} — {session.date}</h5>
+            <table>
+              <tbody>
+                <tr><td>Poids</td><td>{session.weight} kg</td></tr>
+                <tr><td>Reps</td><td>{session.reps}</td></tr>
+                <tr><td>RPE</td><td>{session.rpe || '-'}</td></tr>
+              </tbody>
+            </table>
+          </div>
+        ))}
+      </div>
+    </>
+  )
+})()}
                   </div>
                 )) : <p className="empty">Aucune statistique pour le moment.</p>}
               </div>
