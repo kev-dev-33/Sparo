@@ -408,6 +408,7 @@ function App() {
   const [duplicateTargets, setDuplicateTargets] = useState({})
   const [selectedClientId, setSelectedClientId] = useState(null)
   const [newWorkout, setNewWorkout] = useState(emptyWorkout)
+  const [historyExpanded, setHistoryExpanded] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
@@ -937,14 +938,34 @@ function App() {
               </div>
 
               <div className="history">
-                <div className="section-heading compact-heading"><h3>Historique récent</h3><span className="muted">{clientWorkouts.length} entrée(s)</span></div>
-                {clientWorkouts.length ? clientWorkouts.map((workout) => (
-                  <article className="workout-card" key={workout.id}>
-                    <div className="workout-header"><strong>{workout.exercise}</strong><span className="date">{workout.date}</span></div>
-                    <div className="workout-details"><span>{workout.weight} kg</span><span>{workout.reps} reps</span><span>RPE {workout.rpe || '—'}</span><button className="text-button" onClick={() => removeWorkout(workout.id)} type="button">Supprimer</button></div>
-                  </article>
-                )) : <p className="empty">Enregistrez une séance pour commencer le suivi.</p>}
-              </div>
+  <div className="section-heading compact-heading">
+    <h3>Historique récent</h3>
+    <span className="muted">{clientWorkouts.length} entrée(s)</span>
+  </div>
+  <button
+    type="button"
+    className="history-toggle"
+    onClick={() => setHistoryExpanded((current) => !current)}
+  >
+    {historyExpanded ? '▲ Réduire l\'historique' : '▼ Voir l\'historique complet'}
+  </button>
+  {historyExpanded && (
+    clientWorkouts.length ? clientWorkouts.map((workout, index) => (
+      <article className="workout-card" key={workout.id}>
+        <div className="workout-header">
+          <strong>Séance {clientWorkouts.length - index} — {workout.exercise}</strong>
+          <span className="date">{workout.date}</span>
+        </div>
+        <div className="workout-details">
+          <span>{workout.weight} kg</span>
+          <span>{workout.reps} reps</span>
+          <span>RPE {workout.rpe || '-'}</span>
+          <button className="delete-exercise" onClick={() => removeWorkout(workout.id)}>×</button>
+        </div>
+      </article>
+    )) : <p className="empty">Enregistrez une séance pour commencer le suivi.</p>
+  )}
+</div>
             </>
           ) : <p className="empty">Sélectionnez un client pour voir son suivi.</p>}
         </section>

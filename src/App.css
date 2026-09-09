@@ -1089,3 +1089,19 @@ body {
   font-weight: bold;
   border-radius: 10px;
 }
+.history-toggle {
+  width: 100%;
+  background: none;
+  border: 1px solid #FF0000;
+  color: #FF0000;
+  font-weight: bold;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 10px 0;
+}
+
+.history-toggle:hover {
+  background: #FF0000;
+  color: #fff;
+}
