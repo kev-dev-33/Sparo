@@ -600,7 +600,7 @@ function App() {
     const targetClientId = Number(duplicateTargets[program.id])
     if (!targetClientId) return
 
-    const { data: savedProgram, error } = await supabase.from('programs').insert({ user_id: userId, client_id: targetClientId, name: `${program.name} (copie)`, exercises: program.exercises.map((exercise) => ({ ...exercise, id: Date.now() + exercise.id })) }).select().single()
+    const { data: savedProgram, error } = await supabase.from('programs').insert({ user_id: userId, client_id: targetClientId, name: `${program.name} (copie)`, exercises: (program.exercises || []).map((exercise) => ({ ...exercise, id: Date.now() + exercise.id })) }).select().single()
     if (error) {
       console.error('Impossible de dupliquer le programme.', error)
       return
