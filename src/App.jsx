@@ -33,10 +33,11 @@ const programTemplates = [
   { category: 'Force pure', name: 'Smolov', description: 'Cycle exigeant centré sur la progression du squat.' },
   { category: 'Force pure', name: 'Conjugate Method', description: 'Travail alterné de force maximale, vitesse et effort dynamique.' },
   { category: 'Hybrides', name: 'Daily Undulating Periodization', description: 'Intensité et volume varient à chaque séance.' },
-  { category: 'Hybrides', name: 'Block Periodization', description: 'Cycles successifs dédiés au volume, à la force et au pic.' },
-  { category: 'Hybrides', name: 'EMOM', description: 'Un effort programmé au début de chaque minute.' },
-  { category: 'Hybrides', name: 'Powerbuilding hybride', description: 'Force et hypertrophie combinées dans une même structure.' },
-]
+ { category: 'Hybrides', name: 'Block Periodization', description: 'Cycles successifs dédiés au volume, à la force et au pic.' },
+{ category: 'Hybrides', name: 'EMOM', description: 'Un effort programmé au début de chaque minute...' },
+{ category: 'Hybrides', name: 'Powerbuilding hybride', description: 'Force et hypertrophie combinées dans une même structure de séance, avec un exercice principal lourd suivi d\'accessoires en volume.' },
+];
+
 const programDetails = {
   'Full Body': {
     principe: "Travail complet du corps à chaque séance pour maximiser la fréquence de stimulation sur chaque groupe musculaire, idéal pour les débutants.",
@@ -1033,7 +1034,14 @@ const saveSession = async () => {
   ])
   setPendingExercises([])
 }
-
+const removeWorkout = async (workoutId) => {
+  const { error } = await supabase.from('workouts').delete().eq('id', workoutId)
+  if (error) {
+    console.error('Impossible de supprimer la séance.', error)
+    return
+  }
+  setWorkouts((current) => current.filter(({ id }) => id !== workoutId))
+}
   const exportClientPdf = () => {
     window.print()
   }
@@ -1246,7 +1254,11 @@ const saveSession = async () => {
       </div>
     ))}
   </div>
-
+<button 
+  className="delete-button" 
+  onClick={() => removeProgram(program.id)} 
+  type="button"
+>Supprimer</button>
   <div className="duplicate-row">
     <select aria-label={`Client cible pour ${program.name}`} value={duplicateTargets[program.id] || ''} onChange={(event) => setDuplicateTargets((current) => ({ ...current, [program.id]: event.target.value }))}>
       <option value="">Dupliquer vers...</option>
@@ -1445,4 +1457,5 @@ const saveSession = async () => {
   )
 }
 
+export { programDetails, programTemplates }
 export default App
