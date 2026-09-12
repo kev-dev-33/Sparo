@@ -1263,9 +1263,8 @@ const removeProgram = async (programId) => {
     ))}
   </div>
 <button
-  className="btn btn-outline"
+  className="btn-delete-program"
   onClick={() => removeProgram(program.id)}
-  style={{ color: '#FF0000', borderColor: '#FF0000', marginTop: '8px' }}
   type="button"
 >🗑 Supprimer le programme</button>
   <div className="duplicate-row">
