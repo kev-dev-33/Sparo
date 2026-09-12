@@ -1042,6 +1042,14 @@ const removeWorkout = async (workoutId) => {
   }
   setWorkouts((current) => current.filter(({ id }) => id !== workoutId))
 }
+const removeProgram = async (programId) => {
+  const { error } = await supabase.from('programs').delete().eq('user_id', userId).eq('id', programId)
+  if (error) {
+    console.error('Impossible de supprimer le programme.', error)
+    return
+  }
+  setPrograms((current) => current.filter(({ id }) => id !== programId))
+}
   const exportClientPdf = () => {
     window.print()
   }
@@ -1254,11 +1262,12 @@ const removeWorkout = async (workoutId) => {
       </div>
     ))}
   </div>
-<button 
-  className="delete-button" 
-  onClick={() => removeProgram(program.id)} 
+<button
+  className="btn btn-outline"
+  onClick={() => removeProgram(program.id)}
+  style={{ color: '#FF0000', borderColor: '#FF0000', marginTop: '8px' }}
   type="button"
->Supprimer</button>
+>🗑 Supprimer le programme</button>
   <div className="duplicate-row">
     <select aria-label={`Client cible pour ${program.name}`} value={duplicateTargets[program.id] || ''} onChange={(event) => setDuplicateTargets((current) => ({ ...current, [program.id]: event.target.value }))}>
       <option value="">Dupliquer vers...</option>
